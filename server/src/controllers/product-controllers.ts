@@ -45,27 +45,20 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
   try {
-    const {
-      productId,
-      title,
-      description,
-      price,
-      stock,
-      sub_title,
-      imageUrl
-    } = req.body;
+    const { productId, title, description, price, stock, sub_title, imageUrl } =
+      req.body;
 
     const result = await prisma.product.update({
-      where : {id: productId},
+      where: { id: productId },
       data: {
         title,
         stock,
         price,
         description,
         sub_title,
-        imageUrl
-      }
-         });
+        imageUrl,
+      },
+    });
     res.status(200).json({ message: 'successfully updated a product', result });
   } catch (error) {
     console.error(error);
@@ -90,3 +83,13 @@ export const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const totalProducts = async (req: Request, res: Response) => {
+  try {
+    const count = await prisma.product.count();
+
+    return res.status(200).json({ message: 'total products', count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'unable to fetch total products' });
+  }
+};

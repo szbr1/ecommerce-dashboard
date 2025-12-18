@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import type { Request, Response } from "express"
+import bcrypt from 'bcryptjs'
 
 
 
@@ -7,11 +8,19 @@ export const singUp = async (req: Request, res: Response)=>{
     try {
         console.log("hello")
         const {email , password, name} = req.body;
+
+        if(!email || !password || !name){
+            return res.status(400).json({message: "All fields are required"})
+        }
+       
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         const result = await prisma.user.create({
             data: {
                 email,
                 name,
-                password,
+                password: hashedPassword,
             }
         }) 
 
@@ -33,5 +42,15 @@ export const signIn = async (req: Request, res: Response)=>{
     } catch (error) {
         console.error(error)
         res.status(500).json({message: "sigin failed server is not responding"})
+    }
+}
+
+export const totalUsers = async (req: Request, res: Response)=>{
+    try {
+        const count = await prisma.user.count();
+        return res.status(200).json({message: "total users", count})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: "unable to fetch total users"})
     }
 }

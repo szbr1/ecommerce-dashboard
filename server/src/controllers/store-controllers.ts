@@ -61,3 +61,16 @@ export const deleteStore = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'unsuccessfully while updating' });
   }
 };
+
+export const totalStores = async (req: Request, res: Response) => {
+  try {
+    const count = await prisma.store.count();
+
+    return res.status(200).json({ message: 'total stores', count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'unable to fetch total stores' });
+  }
+};
+
+
