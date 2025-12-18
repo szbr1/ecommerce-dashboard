@@ -1,27 +1,37 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-
+import AuthRoutes from "./routes/auth_routes"
+import ProductRoutes from "./routes/product_routes"
+import StoreRoutes from "./routes/store_rotes"
+import CategoryRotues from "./routes/category_routes"
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middlewares
-app.use(helmet());
-app.use(cors());
-app.use(morgan('dev'));
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
+app.use(morgan('dev'));
 
-// Routes
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
+// Auth route
 
-// Start server
+app.use(express.json());
+// Other routes
+
+
+
+app.use("/api/auth", AuthRoutes)
+app.use("/api/product", ProductRoutes)
+app.use("/api/store", StoreRoutes)
+app.use("/api/category", CategoryRotues)
+
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}, with: ${process.env.GITHUB_CLIENT_SECRET}`);
 });
