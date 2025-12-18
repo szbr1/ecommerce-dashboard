@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            Int          @id @default(autoincrement())
+  name          String // user name 
+  email         String // email
+  password      String // hash password very secure
+  roles         manyUsers[] // User can have multiple roles
+  profile       UserProfile? // user can only have one it's own profile
+  orders        Order[] //  can have many orders
+  address       Address[] // home & office & many more 
+  contact       Contact? // only one contact details
+  access        StoreAccess[]
+  store         Store[]
+}
+
+enum userRole {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+model Role {
+  id        Int         @id @default(autoincrement())
+  name      userRole    @unique
+  manyUsers manyUsers[]
+}
+
+model manyUsers {
+  roleId Int
+  userId Int
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@id([roleId, userId])
+  @@index([userId])
+}
+
+model UserProfile {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id])
+  imageUrl    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String
+}
+
+enum StoreStatus {
+  ACTIVE
+  DEACTIVATED
+  FROZEN
+  DELETED
+}
+
+model Store {
+  id          Int         @id @default(autoincrement())
+  name        String
+  imageUrl    String?
+  description String?
+  status      StoreStatus @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt()
+  products    Product[]
+  roles       StoreAccess[]
+  user        User       @relation(fields: [userId], references: [id])
+  userId      Int
+
+  @@index([name])
+  @@index([id])
+}
+
+model StoreAccess {
+  storeId     Int
+  store Store @relation(fields: [storeId], references: [id])
+  userId      Int
+  user        User       @relation(fields: [userId], references: [id])
+  permissions StoreRoles @default(ADMIN)
+
+  @@id([storeId, userId])
+}
+
+enum StoreRoles {
+  ADMIN
+  OWNER
+  MODERATOR
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  title       String
+  sub_title   String?
+  imageUrl    String?
+  description String?
+  categoryId  Int 
+  category  Category @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
+  price       Decimal
+  sold        Int      @default(0)
+  stock       Int
+  orders      Order[]
+  storeId     Int
+  store       Store    @relation(fields: [storeId], references: [id])
+
+  @@index([id])
+  @@index([title])
+}
+
+model Order {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  trackingId String?
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
+
+  @@index([createdAt])
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  products  Product[]
+  name String
+}
+
+model Address {
+  id       Int     @id @default(autoincrement())
+  userId   Int
+  user     User    @relation(fields: [userId], references: [id])
+  zip      String?
+  state    String
+  province String
+  Street2  String?
+  Street1  String
+
+  @@index([province])
+}
+
+model Contact {
+  id       Int    @id @default(autoincrement())
+  userId   Int    @unique
+  user     User   @relation(fields: [userId], references: [id])
+  contact1 Int
+  contact2 Int?
+  email    String @unique
+
+  @@index([email])
+}
