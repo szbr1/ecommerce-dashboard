@@ -39,3 +39,14 @@ export const deleteCategory = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'unsuccessfully while creating' });
   }
 };
+
+export const totalCategories = async (req: Request, res: Response) => {
+  try {
+    const count = await prisma.category.count();  
+
+    return res.status(200).json({ message: 'total categories', count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'unable to fetch total categories' });
+  }
+};
