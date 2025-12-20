@@ -20,7 +20,6 @@ export const createCategory = async (req: Request, res: Response) => {
   }
 };
 
-
 export const deleteCategory = async (req: Request, res: Response) => {
   try {
     const { categoryId } = req.body;
