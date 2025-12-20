@@ -35,3 +35,14 @@ export const signIn = async (req: Request, res: Response)=>{
         res.status(500).json({message: "sigin failed server is not responding"})
     }
 }
+
+export const totalUsers = async (req: Request, res: Response)=>{
+    try {
+        const result = await prisma.user.count()        
+        res.status(200).json({message: "successfully logged In", result})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: "sigin failed server is not responding"})
+    }
+}
+

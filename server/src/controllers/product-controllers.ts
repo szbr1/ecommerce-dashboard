@@ -90,3 +90,13 @@ export const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const totalProducts = async (req: Request, res: Response)=>{
+    try {
+        const result = await prisma.product.count()        
+        res.status(200).json({message: "successfully fetched all products", result})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: "all products fetch failed server is not responding"})
+    }
+}
+
