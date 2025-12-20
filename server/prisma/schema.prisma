@@ -7,17 +7,24 @@ datasource db {
 }
 
 model User {
-  id            Int          @id @default(autoincrement())
-  name          String // user name 
-  email         String // email
-  password      String // hash password very secure
-  roles         manyUsers[] // User can have multiple roles
-  profile       UserProfile? // user can only have one it's own profile
-  orders        Order[] //  can have many orders
-  address       Address[] // home & office & many more 
-  contact       Contact? // only one contact details
-  access        StoreAccess[]
-  store         Store[]
+  id             Int           @id @default(autoincrement())
+  name           String // user name 
+  email          String // email
+  password       String // hash password very secure
+  roles          manyUsers[] // User can have multiple roles
+  profile        UserProfile? // user can only have one it's own profile
+  orders         Order[] //  can have many orders
+  address        Address[] // home & office & many more 
+  contact        Contact? // only one contact details
+  access         StoreAccess[]
+  store          Store[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  followedStores Follower[]
+  reviews        Review[]
+  comments      Comment[]
+
+  @@index([email])
 }
 
 enum userRole {
@@ -61,25 +68,38 @@ enum StoreStatus {
 }
 
 model Store {
-  id          Int         @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   name        String
   imageUrl    String?
   description String?
-  status      StoreStatus @default(ACTIVE)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt()
+  status      StoreStatus   @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt()
   products    Product[]
   roles       StoreAccess[]
-  user        User       @relation(fields: [userId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
   userId      Int
+  followers   Follower[]
 
   @@index([name])
   @@index([id])
 }
 
+model Follower {
+  id        Int      @id @default(autoincrement())
+  storeId   Int
+  store     Store    @relation(fields: [storeId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([storeId])
+  @@index([userId])
+}
+
 model StoreAccess {
   storeId     Int
-  store Store @relation(fields: [storeId], references: [id])
+  store       Store      @relation(fields: [storeId], references: [id])
   userId      Int
   user        User       @relation(fields: [userId], references: [id])
   permissions StoreRoles @default(ADMIN)
@@ -99,8 +119,8 @@ model Product {
   sub_title   String?
   imageUrl    String?
   description String?
-  categoryId  Int 
-  category  Category @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt()
   price       Decimal
@@ -109,7 +129,7 @@ model Product {
   orders      Order[]
   storeId     Int
   store       Store    @relation(fields: [storeId], references: [id])
-
+  reviews     Review[]
   @@index([id])
   @@index([title])
 }
@@ -128,9 +148,9 @@ model Order {
 }
 
 model Category {
-  id         Int      @id @default(autoincrement())
-  products  Product[]
-  name String
+  id       Int       @id @default(autoincrement())
+  products Product[]
+  name     String
 }
 
 model Address {
@@ -156,3 +176,29 @@ model Contact {
 
   @@index([email])
 }
+
+model Review {
+ id       Int    @id @default(autoincrement())
+ productId Int
+ userId Int 
+ comment String 
+ createdAt      DateTime      @default(now())
+ updatedAt      DateTime      @updatedAt
+ comments Comment[]
+ user User @relation(fields: [userId], references: [id])
+ product Product @relation(fields: [productId], references: [id])
+ @@unique([userId, productId])
+}
+
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  message String 
+  createdAt      DateTime      @default(now())
+  reviewId     Int
+  review       Review      @relation(fields: [reviewId], references: [id])
+  commenterId Int
+  commenter   User      @relation(fields: [commenterId], references: [id])
+}
+
+
