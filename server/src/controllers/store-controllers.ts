@@ -62,15 +62,13 @@ export const deleteStore = async (req: Request, res: Response) => {
   }
 };
 
-export const totalStores = async (req: Request, res: Response) => {
-  try {
-    const count = await prisma.store.count();
 
-    return res.status(200).json({ message: 'total stores', count });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'unable to fetch total stores' });
-  }
-};
-
-
+export const totalStores = async (req: Request, res: Response)=>{
+    try {
+        const result = await prisma.store.count()        
+        res.status(200).json({message: "total stores fetched successfully", result})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: "stores fetch failed server is not responding"})
+    }
+}

@@ -47,10 +47,11 @@ export const signIn = async (req: Request, res: Response)=>{
 
 export const totalUsers = async (req: Request, res: Response)=>{
     try {
-        const count = await prisma.user.count();
-        return res.status(200).json({message: "total users", count})
+        const result = await prisma.user.count()        
+        res.status(200).json({message: "successfully fetched total users", result})
     } catch (error) {
         console.error(error)
-        res.status(500).json({message: "unable to fetch total users"})
+        res.status(500).json({message: "total users fetch failed server is not responding"})
     }
 }
+
