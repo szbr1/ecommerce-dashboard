@@ -133,6 +133,7 @@ model Product {
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])
 
+  orders      OrderItem[]
   storeId     Int
   store       Store    @relation(fields: [storeId], references: [id])
 
