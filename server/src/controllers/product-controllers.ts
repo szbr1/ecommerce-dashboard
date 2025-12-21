@@ -83,13 +83,47 @@ export const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
-export const totalProducts = async (req: Request, res: Response)=>{
-    try {
-        const result = await prisma.product.count()        
-        res.status(200).json({message: "successfully fetched all products", result})
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({message: "all products fetch failed server is not responding"})
-    }
-}
+export const totalProducts = async (req: Request, res: Response) => {
+  try {
+    const result = await prisma.product.count();
+    res
+      .status(200)
+      .json({ message: 'successfully fetched all products', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: 'all products fetch failed server is not responding' });
+  }
+};
 
+export const topSellingProduct = async (req: Request, res: Response) => {
+  try {
+    const { storeId } = req.body;
+    const result = await prisma.product.findMany({
+      where: { orders: { some: { storeId} } },
+      orderBy: {
+        sold: "desc"
+      },
+      take: 8,
+      select: {
+        id: true,
+        imageUrl: true,
+        sold: true,
+        title: true,
+        description: true
+      },
+      
+    });
+
+    
+    res
+      .status(200)
+      .json({ message: 'successfully fetched all products', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: 'all products fetch failed server is not responding' });
+  }
+};

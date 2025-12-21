@@ -1,14 +1,31 @@
-import { UserRole, StoreStatus, StoreRoles } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '@prisma/client';
+import {
+  PrismaClient,
+  UserRole,
+  StoreStatus,
+  StoreRoles,
+} from '@prisma/client';
 import { config } from 'dotenv';
+import { PrismaPg } from '@prisma/adapter-pg';
+
 
 config();
 const connectionString = process.env.DATABASE_URL as string;
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
-async function main() {
-  // 1. Clean Database
+
+const today = new Date('2025-12-21T12:00:00Z');
+
+function randomPrice() {
+  return Math.round((Math.random() * 100 + 10) * 100) / 100;
+}
+
+function randomDateBetween(start: Date, end: Date) {
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+  );
+}
+
+async function cleanDatabase() {
   await prisma.comment.deleteMany();
   await prisma.review.deleteMany();
   await prisma.orderItem.deleteMany();
@@ -24,23 +41,26 @@ async function main() {
   await prisma.manyUsers.deleteMany();
   await prisma.role.deleteMany();
   await prisma.user.deleteMany();
+}
 
-  // 2. Setup Roles
-  const roles = await Promise.all([
-    prisma.role.create({ data: { name: UserRole.SUPER_ADMIN } }),
-    prisma.role.create({ data: { name: UserRole.ADMIN } }),
-    prisma.role.create({ data: { name: UserRole.USER } }),
-  ]);
+async function main() {
+  console.log('🧹 Cleaning database...');
+  await cleanDatabase();
 
-  // 3. Create 20 Users with Profiles, Contacts, and Addresses
+  console.log('👤 Creating roles...');
+  const userRole = await prisma.role.create({
+    data: { name: UserRole.USER },
+  });
+
+  console.log('👥 Creating users...');
   const users = [];
   for (let i = 1; i <= 20; i++) {
     const user = await prisma.user.create({
       data: {
         name: `User ${i}`,
         email: `user${i}@example.com`,
-        password: "secure_password",
-        roles: { create: { roleId: roles[2].id } }, // Default to USER
+        password: 'secure_password',
+        roles: { create: { roleId: userRole.id } },
       },
     });
 
@@ -48,7 +68,7 @@ async function main() {
       data: {
         userId: user.id,
         imageUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`,
-        description: `Bio for User ${i}`,
+        description: 'Bio',
       },
     });
 
@@ -57,7 +77,7 @@ async function main() {
         userId: user.id,
         profileId: profile.id,
         contact1: 923000000 + i,
-        email: `contact${i}@example.com`,
+        email: `c${i}@ex.com`,
       },
     });
 
@@ -65,44 +85,48 @@ async function main() {
       data: {
         userId: user.id,
         profileId: profile.id,
-        state: "State Name",
-        province: "Province Name",
-        Street1: `${i} Main St`,
+        state: 'State',
+        province: 'Province',
+        Street1: 'Street',
       },
     });
+
     users.push(user);
   }
 
-  // 4. Create 5 Stores
+  console.log('🏪 Creating stores...');
   const stores = [];
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 0; i < 5; i++) {
     const store = await prisma.store.create({
       data: {
-        name: `Store ${i}`,
-        userId: users[i % 20].id,
+        name: `Store ${i + 1}`,
+        userId: users[i].id,
         status: StoreStatus.ACTIVE,
         roles: {
-          create: { userId: users[i % 20].id, permissions: StoreRoles.OWNER },
+          create: {
+            userId: users[i].id,
+            permissions: StoreRoles.OWNER,
+          },
         },
       },
     });
     stores.push(store);
   }
 
-  // 5. Create Categories
+  console.log('📦 Creating categories...');
   const categories = await Promise.all([
-    prisma.category.create({ data: { name: "Electronics" } }),
-    prisma.category.create({ data: { name: "Clothing" } }),
-    prisma.category.create({ data: { name: "Home & Garden" } }),
+    prisma.category.create({ data: { name: 'Electronics' } }),
+    prisma.category.create({ data: { name: 'Clothing' } }),
+    prisma.category.create({ data: { name: 'Home & Garden' } }),
   ]);
 
-  // 6. Create 30 Products
+  console.log('🛒 Creating products...');
   const products = [];
-  for (let i = 1; i <= 30; i++) {
+  for (let i = 0; i < 60; i++) {
     const product = await prisma.product.create({
       data: {
-        title: `Product ${i}`,
-        price: (Math.random() * 100 + 10).toFixed(2),
+        title: `Product ${i + 1}`,
+        price: randomPrice(),
         stock: Math.floor(Math.random() * 100),
         categoryId: categories[i % 3].id,
         storeId: stores[i % 5].id,
@@ -111,58 +135,74 @@ async function main() {
     products.push(product);
   }
 
-  // 7. Create 50 Orders
-  for (let i = 1; i <= 50; i++) {
-    const user = users[i % 20];
-    const address = await prisma.address.findFirst({ where: { userId: user.id } });
+  console.log('📑 Creating orders...');
 
-    await prisma.order.create({
-      data: {
-        userId: user.id,
-        addressId: address!.id,
-        orderItems: {
-          create: {
-            productId: products[i % 30].id,
-            storeId: products[i % 30].storeId,
-            quantity: Math.floor(Math.random() * 3) + 1,
-            productAtPrice: products[i % 30].price,
+  const ranges = [
+    // Today
+    { count: 5, start: today, end: today },
+
+    // Last 7 days
+    {
+      count: 15,
+      start: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
+      end: today,
+    },
+
+    // Last 30 days
+    {
+      count: 20,
+      start: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000),
+      end: today,
+    },
+
+    // Last 12 months (rolling)
+    {
+      count: 30,
+      start: new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000),
+      end: today,
+    },
+
+    // Previous calendar year (2024)
+    {
+      count: 30,
+      start: new Date('2024-01-01T00:00:00Z'),
+      end: new Date('2024-12-31T23:59:59Z'),
+    },
+  ];
+
+  let orderIndex = 0;
+
+  for (const range of ranges) {
+    for (let i = 0; i < range.count; i++) {
+      const user = users[orderIndex % users.length];
+      const address = await prisma.address.findFirst({
+        where: { userId: user.id },
+      });
+
+      const createdAt = randomDateBetween(range.start, range.end);
+      const product = products[orderIndex % products.length];
+
+      await prisma.order.create({
+        data: {
+          userId: user.id,
+          addressId: address!.id,
+          createdAt,
+          orderItems: {
+            create: {
+              productId: product.id,
+              storeId: product.storeId,
+              quantity: Math.floor(Math.random() * 3) + 1,
+              productAtPrice: product.price,
+            },
           },
         },
-      },
-    });
+      });
+
+      orderIndex++;
+    }
   }
 
-  // 8. Create 100 Reviews and Comments
-  for (let i = 1; i <= 100; i++) {
-    const user = users[i % 20];
-    const product = products[i % 30];
-
-    // Use upsert for reviews to avoid @@unique([userId, productId]) collisions
-    const review = await prisma.review.upsert({
-      where: {
-        userId_productId: {
-          userId: user.id,
-          productId: product.id,
-        },
-      },
-      update: {},
-      create: {
-        userId: user.id,
-        productId: product.id,
-        comment: `This is review number ${i}`,
-      },
-    });
-
-    await prisma.comment.create({
-      data: {
-        message: `Reply to review ${i}`,
-        reviewId: review.id,
-        commenterId: users[(i + 1) % 20].id,
-      },
-    });
-  }
-
-  console.log("Database Seeded: 20 Users, 5 Stores, 30 Products, 50 Orders, 100 Reviews.");
+  console.log('✅ Seeding complete — analytics-ready data created.');
 }
 
 main()

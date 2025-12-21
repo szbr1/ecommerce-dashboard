@@ -213,3 +213,65 @@ export const allCustomers = async (req: Request, res: Response) => {
       .json({ message: 'stores fetch failed server is not responding' });
   }
 };
+
+export const lastweekSales = async (req: Request, res: Response) => {
+  try {
+    const {storeId} = req.body;
+    const todayDate = new Date();
+    const last7Day = new Date();
+    last7Day.setDate(todayDate.getDate() - 6)
+    const sales = await prisma.orderItem.aggregate({
+      where: {
+         storeId,                                                    
+         order: {
+          createdAt: {gte: last7Day, lte: todayDate}
+         }
+      },
+      _sum: {
+        productAtPrice: true
+      }
+      
+    })
+
+   const result = sales._sum.productAtPrice !== null ? sales._sum.productAtPrice : 0
+        res
+      .status(200)
+      .json({ message: 'total stores fetched zero', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: 'stores fetch failed server is not responding' });
+  }
+};
+
+export const lastyearSales = async (req: Request, res: Response) => {
+  try {
+    const {storeId} = req.body;
+    const todayDate = new Date();
+    const last1Year = new Date(todayDate);
+    last1Year.setFullYear(todayDate.getFullYear() - 1)
+    const sales = await prisma.orderItem.aggregate({
+      where: {
+         storeId,                                                    
+         order: {
+          createdAt: {gte: last1Year, lte: todayDate}
+         }
+      },
+      _sum: {
+        productAtPrice: true
+      }
+      
+    })
+
+   const result = sales._sum.productAtPrice ?? 0
+        res
+      .status(200)
+      .json({ message: 'total stores fetched zero', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: 'stores fetch failed server is not responding' });
+  }
+};
