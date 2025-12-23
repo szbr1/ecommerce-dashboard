@@ -1,21 +1,27 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { CountWords, plainText } from '@/utils/StoreUtils';
+import { FormDataInteface, PreviewImagesInteface } from '@/utils/types';
 import { Pen } from 'lucide-react';
-import React, { useRef, useState } from 'react';
+import React, { SetStateAction, useRef, useState } from 'react';
 import { toast } from 'sonner';
+
+interface StoreProfileProps {
+  store: { name: string; description: string; imageUrl: string };
+  setFormData: React.Dispatch<SetStateAction<FormDataInteface>>;
+  setImagesPreview: React.Dispatch<SetStateAction<PreviewImagesInteface>>;
+  imagesPreviews: PreviewImagesInteface;
+}
 
 function StoreProfile({
   store,
-}: {
-  store: { name: string; description: string; imageUrl: string };
-}) {
+  setFormData,
+  imagesPreviews,
+  setImagesPreview,
+}: StoreProfileProps) {
   const [isNameEditable, setisNameEditable] = useState(false);
   const [isDescriptionEditable, setisDescriptionEditable] = useState(false);
-  const [imagePreview, setImagePreview] = useState('');
-  const fileInput = useRef<HTMLInputElement | null>(null);
-  const [text, setText] = useState('');
-  console.log(text);
+  const avatarRef = useRef<HTMLInputElement | null>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -34,7 +40,6 @@ function StoreProfile({
     if (words > MAX_WORDS) {
       el.innerText = PlainText.split(' ').splice(0, MAX_WORDS).join(' ');
 
-      
       const range = document.createRange();
       const sel = window.getSelection();
 
@@ -54,11 +59,13 @@ function StoreProfile({
     document.execCommand('insertText', false, text);
   };
 
+ 
+
   return (
     <div className="flex gap-5">
       <div className="size-20 md:size-26 lg:size-32 shrink-0 relative rounded-full  border p-1">
         <img
-          src={`${imagePreview.length > 0 ? imagePreview : store.imageUrl}`}
+          src={`${imagesPreviews.avatar.length > 0 ? imagesPreviews.avatar : store.imageUrl}`}
           alt=""
           height={50}
           width={50}
@@ -67,13 +74,14 @@ function StoreProfile({
         <input
           type="file"
           accept="image/*"
-          ref={fileInput}
+          ref={avatarRef}
           hidden
           onChange={e => {
             const file = e.target.files?.[0];
             if (file) {
               const blob = URL.createObjectURL(file);
-              setImagePreview(blob);
+              setImagesPreview(prev => ({...prev, avatar: blob}))
+              setFormData(prev => ({...prev, avatar: file}))
             }
           }}
         />
@@ -81,7 +89,7 @@ function StoreProfile({
         <Button
           className={cn('size-7 p-1 cursor-pointer absolute bottom-2 right-3')}
           onClick={() => {
-            fileInput.current?.click();
+            avatarRef.current?.click();
           }}
         >
           <Pen size={20} className="bg-amber-500 p-1 rounded-full text-black" />
@@ -92,7 +100,7 @@ function StoreProfile({
         <div className="flex items-center gap-3">
           <h1
             onKeyDown={handleKeyDown}
-            onBlur={e => setText(e.target.innerText)}
+            onBlur={e => setFormData((prev)=> ({...prev, name: e.target.innerText}))}
             contentEditable={isNameEditable}
             className="text-xl md:text-2xl lg:text-3xl border-none outline-none focus:border-none focus:outline-none font-semibold"
           >
@@ -117,7 +125,7 @@ function StoreProfile({
             onPaste={handlePaste}
             onKeyDown={handleKeyDown}
             onInput={handleInput}
-            onBlur={e => setText(e.target.innerText)}
+            onBlur={e => setFormData(prev => ({...prev, description: e.target.innerText}))}
             className="text-xs md:sm text-gray-300  max-w-45 md:max-w-50 lg:max-w-90 focus:outline-none"
           >
             {store.description}
