@@ -13,7 +13,7 @@ import { EllipsisVertical } from 'lucide-react';
 
 function Navbar() {
   return (
-    <div className="flex sticky top-0 right-0 w-full dark:bg-[#0A0A0A] bg-white justify-between items-center px-12 mt-3 py-2">
+    <div className="flex sticky top-0 right-0 w-full border-b pb-3 dark:bg-[#0A0A0A] bg-white justify-between items-center px-12 mt-3 py-2">
       <div className='flex justify-center gap-3'>
             <SidebarTrigger />
        

@@ -33,7 +33,7 @@ const productApi = api.injectEndpoints({
 
     getProducts: builder.query({
       query: ({ limit, page }) =>
-        `api/product/getProducts?limit=${limit}&page=${page}`,
+        `api/product/getProducts?storeId=1&limit=${limit}&page=${page}`,
       providesTags: ['Products'],
     }),
   }),

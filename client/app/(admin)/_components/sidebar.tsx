@@ -6,17 +6,17 @@ import React from 'react'
 const items = [
   {
     title: "Home",
-    url: "#",
+    url: "/dashboard",
     icon: Home,
   },
   {
     title: "Inbox",
-    url: "#",
+    url: "/dashboard/products",
     icon: Inbox,
   },
   {
     title: "Calendar",
-    url: "#",
+    url: "/dashboard/store",
     icon: Calendar,
   },
   {
