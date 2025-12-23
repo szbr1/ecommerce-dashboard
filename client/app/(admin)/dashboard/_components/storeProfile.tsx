@@ -1,17 +1,21 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { CountWords, plainText } from '@/utils/StoreUtils';
 import { Pen } from 'lucide-react';
 import React, { useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-function StoreProfile
-({store}:{store:{name: string, description: string, imageUrl:string}}) {
+function StoreProfile({
+  store,
+}: {
+  store: { name: string; description: string; imageUrl: string };
+}) {
   const [isNameEditable, setisNameEditable] = useState(false);
   const [isDescriptionEditable, setisDescriptionEditable] = useState(false);
   const [imagePreview, setImagePreview] = useState('');
   const fileInput = useRef<HTMLInputElement | null>(null);
   const [text, setText] = useState('');
-  console.log(text)
-
+  console.log(text);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -21,6 +25,34 @@ function StoreProfile
     }
   };
 
+  const handleInput = (e: React.FormEvent<HTMLParagraphElement>) => {
+    const MAX_WORDS = 20;
+    const el = e.currentTarget;
+    const PlainText = plainText(el);
+    const words = CountWords(PlainText);
+
+    if (words > MAX_WORDS) {
+      el.innerText = PlainText.split(' ').splice(0, MAX_WORDS).join(' ');
+
+      
+      const range = document.createRange();
+      const sel = window.getSelection();
+
+      range.selectNodeContents(el); // limit range to the element
+      range.collapse(false); // place cursor at the end
+
+      sel?.removeAllRanges(); // clear existing selection
+      sel?.addRange(range); // apply new cursor position
+
+      toast.error('You reached the maximum 100 words length');
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLParagraphElement>) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+  };
 
   return (
     <div className="flex gap-5">
@@ -82,12 +114,11 @@ function StoreProfile
         <div className="flex gap-2">
           <p
             contentEditable={isDescriptionEditable}
+            onPaste={handlePaste}
             onKeyDown={handleKeyDown}
+            onInput={handleInput}
             onBlur={e => setText(e.target.innerText)}
-            className="text-xs md:sm text-gray-300  max-w-xl
-  leading-relaxed
-  whitespace-pre-wrap
-  break-all focus:outline-none"
+            className="text-xs md:sm text-gray-300  max-w-45 md:max-w-50 lg:max-w-90 focus:outline-none"
           >
             {store.description}
           </p>
@@ -109,5 +140,4 @@ function StoreProfile
   );
 }
 
-export default StoreProfile
-;
+export default StoreProfile;
