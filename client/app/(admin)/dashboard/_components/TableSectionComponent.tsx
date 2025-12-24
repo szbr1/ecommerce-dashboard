@@ -15,7 +15,7 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { handleEditabble } from '@/utils/StoreUtils';
+import { GetDate, handleEditabble } from '@/utils/StoreUtils';
 import { OrdersInterface } from '@/utils/types';
 import { useRouter } from 'next/navigation';
 
@@ -48,7 +48,7 @@ function TableSectionComponent({ orders }: { orders: OrdersInterface[] }) {
           orders.map(order => (
             <TableRow onClick={()=>route.push(`/dashboard/orders/${order.id}`)}>
               <TableCell>#{order.id}</TableCell>
-              <TableCell>{order.date}</TableCell>
+              <TableCell>{GetDate(order.date)}</TableCell>
               <TableCell>{order.customerName}</TableCell>
               <TableCell>
                 <Select defaultValue={order.status.toLowerCase()}>
@@ -96,7 +96,7 @@ function TableSectionComponent({ orders }: { orders: OrdersInterface[] }) {
                 </Select>
               </TableCell>
               <TableCell>{order.email}</TableCell>
-              <TableCell>{order.date}</TableCell>
+              <TableCell>N/A</TableCell>
               <TableCell>Hello</TableCell>
             </TableRow>
           ))}

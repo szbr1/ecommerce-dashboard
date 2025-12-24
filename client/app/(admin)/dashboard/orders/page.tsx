@@ -1,3 +1,4 @@
+import { orders } from "@/constants/orders"
 import CardRowSectionComponent from "../_components/CardRowSectionComponent"
 import TableComponent from "../_components/TableComponent"
 
@@ -6,7 +7,7 @@ function Page() {
     <div className="flex flex-col">
      
      <CardRowSectionComponent/>
-     <TableComponent />
+     <TableComponent orders={orders}/>
     </div>
   )
 }
