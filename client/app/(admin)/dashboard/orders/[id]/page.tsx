@@ -16,7 +16,7 @@ function page() {
           <h2 className="min-w-[100px]">{order.id}</h2>
         </div>
         <div className="flex justify-between items-center">
-          <h2>Customer Name:</h2>
+          <h2>Customer Name:</h2>x
           <h2 className="min-w-[100px]">{order.user.name}</h2>
         </div>
         <hr className='my-2' />

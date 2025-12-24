@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { EllipsisVertical } from 'lucide-react';
+import Image from 'next/image';
 
 function Navbar() {
   return (
@@ -26,12 +26,17 @@ function Navbar() {
       <div>
         
         <DropdownMenu>
-          <DropdownMenuTrigger className='cursor-pointer'><EllipsisVertical /></DropdownMenuTrigger>
+          <DropdownMenuTrigger className='cursor-pointer'>
+
+            <div className='size-8 bg-green-300 rounded-full overflow-hidden'>
+            <Image src={'/person.png'} height={10} width={10} alt='' className='size-full object-cover'/>
+            </div>
+          </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="/profile">Profile</Link>
+              <Link href="/dashboard/profile">Profile</Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               Logout
