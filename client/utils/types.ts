@@ -28,3 +28,17 @@ export interface OrdersInterface {
   orderId: string;
   trackingId?: string;
 }
+
+export interface Review {
+  id: number;
+  text: string;
+  starRating: number; // 1–5
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    name: string;
+    email: string;
+    imageUrl: string;
+  };
+}
+
