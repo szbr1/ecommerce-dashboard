@@ -9,9 +9,22 @@ export interface FormDataInteface {
 }
 
 export interface PreviewImagesInteface {
-  avatar: string
+  avatar: string;
   brandshoot: string;
   brandshootProduct1: string;
   brandshootProduct2: string;
   poster: string;
+}
+
+export interface OrdersInterface {
+  id: string;
+  customerName: string;
+  email: string;
+  product: string;
+  amount: number;
+  status: 'paid' | 'unpaid' | 'return' | 'completed' | 'failed';
+  deliveryStatus: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+  date: string;
+  orderId: string;
+  trackingId?: string;
 }

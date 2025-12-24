@@ -21,7 +21,7 @@ const items = [
   },
   {
     title: "Search",
-    url: "#",
+    url: "/dashboard/orders",
     icon: Search,
   },
   {

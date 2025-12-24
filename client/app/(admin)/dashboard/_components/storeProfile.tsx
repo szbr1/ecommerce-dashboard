@@ -1,10 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { CountWords, plainText } from '@/utils/StoreUtils';
+import { handleEditabble,} from '@/utils/StoreUtils';
 import { FormDataInteface, PreviewImagesInteface } from '@/utils/types';
 import { Pen } from 'lucide-react';
 import React, { SetStateAction, useRef, useState } from 'react';
-import { toast } from 'sonner';
 
 interface StoreProfileProps {
   store: { name: string; description: string; imageUrl: string };
@@ -31,27 +30,6 @@ function StoreProfile({
     }
   };
 
-  const handleInput = (e: React.FormEvent<HTMLParagraphElement>) => {
-    const MAX_WORDS = 20;
-    const el = e.currentTarget;
-    const PlainText = plainText(el);
-    const words = CountWords(PlainText);
-
-    if (words > MAX_WORDS) {
-      el.innerText = PlainText.split(' ').splice(0, MAX_WORDS).join(' ');
-
-      const range = document.createRange();
-      const sel = window.getSelection();
-
-      range.selectNodeContents(el); // limit range to the element
-      range.collapse(false); // place cursor at the end
-
-      sel?.removeAllRanges(); // clear existing selection
-      sel?.addRange(range); // apply new cursor position
-
-      toast.error('You reached the maximum 100 words length');
-    }
-  };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLParagraphElement>) => {
     e.preventDefault();
@@ -102,6 +80,8 @@ function StoreProfile({
             onKeyDown={handleKeyDown}
             onBlur={e => setFormData((prev)=> ({...prev, name: e.target.innerText}))}
             contentEditable={isNameEditable}
+            onInput={(e)=> handleEditabble(e , 10)}
+            onPaste={handlePaste}
             className="text-xl md:text-2xl lg:text-3xl border-none outline-none focus:border-none focus:outline-none font-semibold"
           >
             {store.name}
@@ -124,7 +104,7 @@ function StoreProfile({
             contentEditable={isDescriptionEditable}
             onPaste={handlePaste}
             onKeyDown={handleKeyDown}
-            onInput={handleInput}
+            onInput={(e)=> handleEditabble(e, 200)}
             onBlur={e => setFormData(prev => ({...prev, description: e.target.innerText}))}
             className="text-xs md:sm text-gray-300  max-w-45 md:max-w-50 lg:max-w-90 focus:outline-none"
           >
