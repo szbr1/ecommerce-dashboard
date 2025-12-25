@@ -24,7 +24,7 @@ export interface OrdersInterface {
   amount: number;
   status: 'paid' | 'unpaid' | 'return' | 'completed' | 'failed';
   deliveryStatus: 'pending' | 'shipped' | 'delivered' | 'cancelled';
-  date: string;
+  createdAt: string;
   orderId: string;
   trackingId?: string;
 }

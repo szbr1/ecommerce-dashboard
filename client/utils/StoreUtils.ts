@@ -29,4 +29,4 @@ export const handleEditabble = (e: React.FormEvent<HTMLParagraphElement>, length
 
 export const GetDate = (isoDate:string | Date)=>{
   return new Date(isoDate).toLocaleString('en-US', {day: "2-digit", month: "long" ,year: "numeric", timeZone: "UTC"})
-}                           
+}                         

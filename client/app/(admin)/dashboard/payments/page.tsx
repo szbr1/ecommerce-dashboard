@@ -47,7 +47,7 @@ function Page() {
         </div>
 
 
-        <div className='w-3/6'>
+        <div className='w-3/6 hidden lg:block'>
            <Card>
               <PaymentChart />
            </Card>
