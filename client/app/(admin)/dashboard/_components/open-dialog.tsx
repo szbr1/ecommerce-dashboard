@@ -208,7 +208,6 @@ function OpenDialog({isCreateProductPopUpOpen, setIsCreateProductPopUpOpen}:Prop
       </DialogContent>
     </Dialog>
   );
-  /*******  1e638b33-db69-4a4f-8d51-8c8041dc7511  *******/
 }
 
 export default OpenDialog;
