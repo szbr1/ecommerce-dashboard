@@ -1,6 +1,7 @@
 import prisma from "@/lib/db"
 import { Request, Response } from "express"
 
+
 export const totalUsers = async (req: Request, res: Response)=>{
     try {
         const result = await prisma.user.count()        
@@ -44,4 +45,5 @@ export const updateProfile = async (req: Request, res: Response)=>{
         res.status(500).json({message: "unable to create profile: failed server is not responding"})
     }
 }
+
 

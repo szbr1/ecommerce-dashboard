@@ -1,33 +1,48 @@
 import { SidebarContent, Sidebar, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar'
-import { Calendar, Home, Inbox, Search, Settings } from 'lucide-react'
-import React from 'react'
+
+import { MdPayments, MdComment } from "react-icons/md";
+
+import { PiShoppingBagFill } from "react-icons/pi";
+import { IoStorefront,IoAnalytics } from "react-icons/io5";
+import { BsFillCapslockFill, BsFillPersonFill } from "react-icons/bs";
+
 
 
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "Analysis",
+    url: "/dashboard",
+    icon: IoAnalytics,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Products",
+    url: "/dashboard/products",
+    icon: BsFillCapslockFill,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Store",
+    url: "/dashboard/store",
+    icon: IoStorefront,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Orders",
+    url: "/dashboard/orders",
+    icon: PiShoppingBagFill,
   },
   {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    title: "Profile",
+    url: "/dashboard/profile",
+    icon: BsFillPersonFill,
+  },
+  {
+    title: "Payments",
+    url: "/dashboard/payments",
+    icon: MdPayments,
+  },
+    {
+    title: "Reviews",
+    url: "/dashboard/reviews",
+    icon: MdComment,
   },
 ]
 

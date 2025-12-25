@@ -1,10 +1,5 @@
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
   Field,
   FieldDescription,
@@ -15,77 +10,199 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useCallback, useState } from 'react';
-import { IoCloudDownloadOutline } from 'react-icons/io5';
-import Dropzone from 'react-dropzone';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { X } from 'lucide-react';
 
+import DropzoneComponent from './dropzpone';
+import { Select, SelectTrigger } from '@/components/ui/select';
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectValue,
+} from '@/components/ui/select';
 
+interface FormDataKeys {
+  title: string;
+  stock: string;
+  description: string;
+  imagesUrl: File[];
+  category: string;
+}
 
-function OpenDialog() {
+interface Props {
+  isCreateProductPopUpOpen: boolean
+  setIsCreateProductPopUpOpen: (state: boolean) => void
+}
 
-    const [Files, setFiles] = useState<File[] | null>(null)
+function OpenDialog({isCreateProductPopUpOpen, setIsCreateProductPopUpOpen}:Props) {
+ 
+
+  const [blobPreview, setBlobPreview] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [formData, setFormData] = useState<FormDataKeys>({
+    title: '',
+    description: '',
+    imagesUrl: [],
+    stock: '',
+    category: '',
+  });
+  const convertFileIntoUrl = (files: File[]) => {
+    const previews = files.map(file => URL.createObjectURL(file));
+    setBlobPreview(previews);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const printAllTheData = () => {
+    setFormData(prev => ({ ...prev, imagesUrl: files }));
+    console.log('---formdata:', formData);
+
+    // TOASTS AREA
+    if (
+      formData &&
+      (!formData.description || !formData.title || !formData.stock)
+    ) {
+      toast.error('Please fill all the required fields');
+      return;
+    }
+    if (formData && (!formData.imagesUrl || !(formData.imagesUrl.length > 0))) {
+      toast.error('At least one image is required.');
+      return;
+    }
+    if (formData && (!formData.category || !(formData.category.length > 0))) {
+      toast.error('Please Select Any One Category');
+    }
+    // ---
+  };
 
   return (
-    <Dialog open={true}>
+    <Dialog open={isCreateProductPopUpOpen} onOpenChange={()=> setIsCreateProductPopUpOpen(false)}>
       <DialogContent className="overflow-y-scroll h-[calc(100vh-100px)]">
         <FieldSet>
           <FieldLegend> Create Product </FieldLegend>
           <FieldDescription>Create your product with ease</FieldDescription>
-          <div className="flex gap-2">
-            {[1, 2, 3, 4].map(i => (
-              <Card key={i}>
-                <CardContent>{i}</CardContent>
-              </Card>
-            ))}
-          </div>
+
+          {/* // IMAGES PREVIEW SECTION */}
+          {blobPreview && (
+            <div className="flex gap-2 ">
+              {blobPreview.map(i => (
+                <div className="relative" key={i}>
+                  <Card className="p-0 w-20 h-20 overflow-hidden ">
+                    <Image
+                      src={i}
+                      height={1}
+                      width={2}
+                      alt=""
+                      className="size-full object-cover"
+                    />
+
+                    {/* CROSS ICON TO REMOVE SELECTED IMAGES  */}
+                    <X
+                      onClick={() =>
+                        setBlobPreview(item => item.filter(v => v != i))
+                      }
+                      className="bg-white rounded-full absolute cursor-pointer -top-2 -right-1 p-0.5  rouned-sm size-5 text-black"
+                    />
+                  </Card>
+                </div>
+              ))}
+            </div>
+          )}
 
           <FieldGroup>
+            
+            {/* // PRODUCT TITLE */}
             <Field>
-              <FieldLabel>Product Name</FieldLabel>
-              <Input id="name" autoComplete="off" />
+              <FieldLabel>Product Title</FieldLabel>
+              <Input onChange={handleChange} name="title" autoComplete="off" />
             </Field>
+
+            {/* // PRODUCT DESCRIPTON */}
             <Field>
               <FieldLabel>Description</FieldLabel>
-              <Textarea placeholder="Write down your proudcts details here." />
-            </Field>
-            <Field>
-              <FieldLabel>Quantity</FieldLabel>
-              <Input
-                placeholder="minimum 10"
-                min={10}
-                defaultValue={10}
-                type="number"
+              <Textarea
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                name="description"
+                placeholder="Write down your proudcts details here."
               />
             </Field>
+
+            {/* // PRODUCT QUANTITY */}
+            <Field className="grid grid-cols-2 gap-3 items-center">
+              <div>
+                <FieldLabel>Quantity</FieldLabel>
+                <Input
+                  placeholder="minimum 10"
+                  onChange={handleChange}
+                  name="stock"
+                  min={10}
+                  defaultValue={10}
+                  type="number"
+                />
+              </div>
+              <div>
+                <FieldLabel>Category</FieldLabel>
+                <Select
+                  onValueChange={value =>
+                    setFormData(prev => ({ ...prev, category: value }))
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Category" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {/* TODO  */}
+                    <SelectGroup>
+                      <SelectLabel>Categories</SelectLabel>
+                      <SelectItem value="apple">Apple</SelectItem>
+                      <SelectItem value="banana">Banana</SelectItem>
+                      <SelectItem value="blueberry">Blueberry</SelectItem>
+                      <SelectItem value="grapes">Grapes</SelectItem>
+                      <SelectItem value="pineapple">Pineapple</SelectItem>
+                    </SelectGroup>
+                    {/* ----  */}
+                  </SelectContent>
+                </Select>
+              </div>
+            </Field>
+
+            {/* // PRODUCT SIZES */}
             <Field>
               <FieldLabel>Size</FieldLabel>
-              <Input placeholder="S,M,L,XL" type="text" />
+              <Input
+                onChange={handleChange}
+                name="size"
+                placeholder="S,M,L,XL"
+                type="text"
+              />
               <FieldDescription>
                 Please list available sizes as comma-separated values (no
                 spaces). Example formats: S,M,L,XL | XL,3X | SMALL,LARGE
               </FieldDescription>
             </Field>
 
-            <Card className="flex justify-center items-center p-0 px-0">
-              <CardContent className='w-full'>
-                <Dropzone onDrop={acceptedFiles => setFiles(acceptedFiles)}>
-                  {({ getRootProps, getInputProps,isDragActive }) => (
-                    <section {...getRootProps()}  >
-                      <input {...getInputProps()} />
-                      <div className=' py-4'>
-                        <div className="flex justify-center items-center py-8">
-                          <IoCloudDownloadOutline className={cn("size-20 animate-bounce ", isDragActive && "opacity-40 animate-none")} />
-                        </div>
-                        <h1 className='text-center'>Drop Product Images</h1>
-                      </div>
-                      
-                    </section>
-                  )}
-                </Dropzone>
-              </CardContent>
-            </Card>
+            {/* // DROP AND SELECT IMAGES */}
+            <DropzoneComponent
+              convertFileIntoUrl={convertFileIntoUrl}
+              setFiles={setFiles}
+            />
+            <Button onClick={printAllTheData}>Print</Button>
           </FieldGroup>
         </FieldSet>
       </DialogContent>

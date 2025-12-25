@@ -102,4 +102,25 @@ export const totalOrders = async (req: Request, res: Response) => {
 };
 
 
+/**
+ * GET ORDER
+ */
+
+export const getOrder = async (req: Request, res: Response)=>{
+  try {
+    const result = await prisma.order.findFirst({
+      include: {
+        address: true,
+        orderItems: {
+          include: {product: true}
+        },
+        user: true
+      }
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json("Failed while getting order")
+  } 
+}
 
