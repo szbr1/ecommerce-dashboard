@@ -321,28 +321,7 @@ export const lastyearSales = async (req: Request, res: Response) => {
   }
 };
 
-export const getTotalFollowersCount = async (req: Request, res: Response) => {
-  try {
-    const result = prisma.store.findFirst({
-      where: {
-        id: 1, // Todo
-      },
-      select: {
-        _count: {
-          select: {
-            followers: true,
-          },
-        },
-      },
-    });
-    res.status(200).json({ message: 'successfully created profile', result });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: 'unable to create profile: failed server is not responding',
-    });
-  }
-};
+
 
 export const getProfle = async (req: Request, res: Response) => {
   try {

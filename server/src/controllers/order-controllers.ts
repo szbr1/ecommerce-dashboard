@@ -110,37 +110,3 @@ export const getOrder = async (req: Request, res: Response)=>{
 }
 
 
-export const getTotalOrdersCount = async (req: Request, res: Response)=>{
-    try {
-        const result = prisma.order.count({
-          where: {
-            orderItems: {
-              some: {
-                storeId: 1 //Todo
-              }
-            }
-          }
-        })
-        res.status(200).json({message: "successfully get orders count", result})
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({message: "unable to get orders count failed server is not responding"})
-    }
-}
-
-export const getTotalPositiveReviewsCount = async (req: Request, res: Response)=>{
-    try {
-        const result = prisma.review.count({
-          where: {
-           product: {
-            storeId: 1 // Todo
-           },
-           stars: {gte: 4}
-          }
-        })
-        res.status(200).json({message: "successfully get reviews count", result})
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({message: "unable to get orders reviews failed server is not responding"})
-    }
-}

@@ -69,6 +69,14 @@ enum StoreStatus {
   DELETED
 }
 
+model StoreCounts {
+  id          Int           @id @default(autoincrement())
+  totalProducts Int
+  totalOrders Int 
+  totalPositiveReviews Int
+  totalFollowers Int
+}
+
 model Store {
   id          Int           @id @default(autoincrement())
   profile     StoreProfile?
