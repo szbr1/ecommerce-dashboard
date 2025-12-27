@@ -41,26 +41,31 @@ export const createStore = async (req: Request, res: Response) => {
 
 export const updateStore = async (req: Request, res: Response) => {
   try {
-    const {  name, imageUrl, description,  avatarUrl,
-          brandshoot,
-          brandshootProduct1,
-          brandshootProduct2, } = req.body;
+    const {
+      name,
+      imageUrl,
+      description,
+      avatarUrl,
+      brandshoot,
+      brandshootProduct1,
+      brandshootProduct2,
+    } = req.body;
 
     const result = await prisma.store.update({
       where: { id: 1 }, // Todo
       data: {
-       profile: {
-        connect: {
-          storeId: 1,
-          banner: imageUrl,
-          description,
-          avatarUrl,
-          brandshoot,
-          brandshootProduct1,
-          brandshootProduct2,
-          name,
-        }
-       }
+        profile: {
+          connect: {
+            storeId: 1,
+            banner: imageUrl,
+            description,
+            avatarUrl,
+            brandshoot,
+            brandshootProduct1,
+            brandshootProduct2,
+            name,
+          },
+        },
       },
     });
 
@@ -333,11 +338,9 @@ export const getTotalFollowersCount = async (req: Request, res: Response) => {
     res.status(200).json({ message: 'successfully created profile', result });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message: 'unable to create profile: failed server is not responding',
-      });
+    res.status(500).json({
+      message: 'unable to create profile: failed server is not responding',
+    });
   }
 };
 
@@ -358,10 +361,50 @@ export const getProfle = async (req: Request, res: Response) => {
     res.status(200).json({ message: 'successfully get store profile', result });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message: 'unable to get store profile: failed server is not responding',
-      });
+    res.status(500).json({
+      message: 'unable to get store profile: failed server is not responding',
+    });
+  }
+};
+
+export const updateProfile = async (req: Request, res: Response) => {
+  const {
+    avatarUrl,
+    brandshoot,
+    brandshootProduct1,
+    banner,
+    description,
+    name,
+    brandshootProduct2,
+  } = req.body;
+
+  try {
+    const result = prisma.store.update({
+      where: {
+        profile: {
+          storeId: 1,
+        },
+        id: 1,
+      },
+      data: {
+        profile: {
+          update: {
+            avatarUrl,
+            brandshoot,
+            brandshootProduct1,
+            banner,
+            description,
+            name,
+            brandshootProduct2,
+          },
+        },
+      },
+    });
+    res.status(200).json({ message: 'successfully get store profile', result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'unable to get store profile: failed server is not responding',
+    });
   }
 };
