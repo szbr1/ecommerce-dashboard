@@ -40,5 +40,5 @@ app.use("/api/category", CategoryRotues)
 app.use("/api/order", OrderRoutes)
 app.use("/api/user", UserRoutes)
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}, with: ${process.env.GITHUB_CLIENT_SECRET}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
