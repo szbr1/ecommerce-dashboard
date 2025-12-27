@@ -8,7 +8,7 @@ export const OrderApi = api.injectEndpoints({
             providesTags: ["Orders"]
         }),
         getTotalOrdersCount : builder.query({
-            query: ()=> "api/product/totalOrdersCount"
+            query: ()=> "api/product/getTotalOrdersCount"
         })
     })
 })

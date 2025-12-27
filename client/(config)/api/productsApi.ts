@@ -38,7 +38,7 @@ const productApi = api.injectEndpoints({
     }),
 
     getTotalCountProducts : builder.query({
-      query: ()=>"api/product/totalProductsCount"
+      query: ()=>"api/product/productCount"
     })
   }),
 
