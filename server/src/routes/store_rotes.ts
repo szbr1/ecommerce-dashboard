@@ -1,9 +1,5 @@
 
-<<<<<<< HEAD
-import { createStore, deleteStore, storeOrders, allCustomers, totalSales, totalStores, updateStore, lastweekSales, lastyearSales } from '@/controllers/store-controllers';
-=======
 import { createStore, deleteStore, getStore,  storeOrders, allCustomers, totalSales, totalStores, updateStore, lastweekSales, lastyearSales } from '@/controllers/store-controllers';
->>>>>>> origin
 import express from 'express';
 import type { Router } from 'express';
 
