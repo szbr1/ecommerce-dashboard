@@ -3,14 +3,30 @@ import { Request, Response } from 'express';
 
 export const createStore = async (req: Request, res: Response) => {
   try {
-    const { name, imageUrl, description, userId } = req.body;
+    const {
+      name,
+      imageUrl,
+      description,
+      banner,
+      brandshoot,
+      brandshootProduct1,
+      brandshootProduct2,
+    } = req.body;
 
     const result = await prisma.store.create({
       data: {
-        name,
-        imageUrl,
-        description,
-        userId,
+        userId: 1,
+        profile: {
+          create: {
+            name,
+            avatarUrl: imageUrl,
+            description,
+            banner,
+            brandshoot,
+            brandshootProduct1,
+            brandshootProduct2,
+          },
+        },
       },
     });
 
@@ -25,14 +41,26 @@ export const createStore = async (req: Request, res: Response) => {
 
 export const updateStore = async (req: Request, res: Response) => {
   try {
-    const { storeId, name, imageUrl, description } = req.body;
+    const {  name, imageUrl, description,  avatarUrl,
+          brandshoot,
+          brandshootProduct1,
+          brandshootProduct2, } = req.body;
 
     const result = await prisma.store.update({
-      where: { id: storeId },
+      where: { id: 1 }, // Todo
       data: {
-        name,
-        imageUrl,
-        description,
+       profile: {
+        connect: {
+          storeId: 1,
+          banner: imageUrl,
+          description,
+          avatarUrl,
+          brandshoot,
+          brandshootProduct1,
+          brandshootProduct2,
+          name,
+        }
+       }
       },
     });
 
@@ -173,28 +201,28 @@ export const allCustomers = async (req: Request, res: Response) => {
   try {
     const { storeId } = req.body;
 
-   const users = await prisma.order.groupBy({
-    by: ['userId'],
-    where: {
-      orderItems: {
-        some: { storeId },
+    const users = await prisma.order.groupBy({
+      by: ['userId'],
+      where: {
+        orderItems: {
+          some: { storeId },
+        },
       },
-    },
-    _count: {
-      _all: true,
-    },
-    having: {
-     userId: {
-       _count: {
-       gte: 3
+      _count: {
+        _all: true,
       },
-     }
-    },
-  });
-    
+      having: {
+        userId: {
+          _count: {
+            gte: 3,
+          },
+        },
+      },
+    });
+
     const clients = await prisma.user.findMany({
       where: {
-        id: {in: users.map(u => u.userId)}
+        id: { in: users.map(u => u.userId) },
       },
       select: {
         id: true,
@@ -202,11 +230,11 @@ export const allCustomers = async (req: Request, res: Response) => {
         email: true,
         profile: {
           select: {
-            imageUrl: true
-          }
-        }
-      }
-    })
+            imageUrl: true,
+          },
+        },
+      },
+    });
 
     const result = clients.map(user => {
       const orderInfo = users.find(g => g.userId === user.id);
@@ -233,27 +261,25 @@ export const allCustomers = async (req: Request, res: Response) => {
 
 export const lastweekSales = async (req: Request, res: Response) => {
   try {
-    const {storeId} = req.body;
+    const { storeId } = req.body;
     const todayDate = new Date();
     const last7Day = new Date();
-    last7Day.setDate(todayDate.getDate() - 6)
+    last7Day.setDate(todayDate.getDate() - 6);
     const sales = await prisma.orderItem.aggregate({
       where: {
-         storeId,                                                    
-         order: {
-          createdAt: {gte: last7Day, lte: todayDate}
-         }
+        storeId,
+        order: {
+          createdAt: { gte: last7Day, lte: todayDate },
+        },
       },
       _sum: {
-        productAtPrice: true
-      }
-      
-    })
+        productAtPrice: true,
+      },
+    });
 
-   const result = sales._sum.productAtPrice !== null ? sales._sum.productAtPrice : 0
-        res
-      .status(200)
-      .json({ message: 'total stores fetched zero', result });
+    const result =
+      sales._sum.productAtPrice !== null ? sales._sum.productAtPrice : 0;
+    res.status(200).json({ message: 'total stores fetched zero', result });
   } catch (error) {
     console.error(error);
     res
@@ -264,31 +290,78 @@ export const lastweekSales = async (req: Request, res: Response) => {
 
 export const lastyearSales = async (req: Request, res: Response) => {
   try {
-    const {storeId} = req.body;
+    const { storeId } = req.body;
     const todayDate = new Date();
     const last1Year = new Date(todayDate);
-    last1Year.setFullYear(todayDate.getFullYear() - 1)
+    last1Year.setFullYear(todayDate.getFullYear() - 1);
     const sales = await prisma.orderItem.aggregate({
       where: {
-         storeId,                                                    
-         order: {
-          createdAt: {gte: last1Year, lte: todayDate}
-         }
+        storeId,
+        order: {
+          createdAt: { gte: last1Year, lte: todayDate },
+        },
       },
       _sum: {
-        productAtPrice: true
-      }
-      
-    })
+        productAtPrice: true,
+      },
+    });
 
-   const result = sales._sum.productAtPrice ?? 0
-        res
-      .status(200)
-      .json({ message: 'total stores fetched zero', result });
+    const result = sales._sum.productAtPrice ?? 0;
+    res.status(200).json({ message: 'total stores fetched zero', result });
   } catch (error) {
     console.error(error);
     res
       .status(500)
       .json({ message: 'stores fetch failed server is not responding' });
+  }
+};
+
+export const getTotalFollowersCount = async (req: Request, res: Response) => {
+  try {
+    const result = prisma.store.findFirst({
+      where: {
+        id: 1, // Todo
+      },
+      select: {
+        _count: {
+          select: {
+            followers: true,
+          },
+        },
+      },
+    });
+    res.status(200).json({ message: 'successfully created profile', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        message: 'unable to create profile: failed server is not responding',
+      });
+  }
+};
+
+export const getProfle = async (req: Request, res: Response) => {
+  try {
+    const result = prisma.store.findUnique({
+      where: {
+        id: 1, // Todo
+      },
+      select: {
+        profile: true,
+        followers: true,
+        createdAt: true,
+        roles: true,
+        status: true,
+      },
+    });
+    res.status(200).json({ message: 'successfully get store profile', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        message: 'unable to get store profile: failed server is not responding',
+      });
   }
 };

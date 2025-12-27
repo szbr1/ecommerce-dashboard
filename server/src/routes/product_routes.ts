@@ -2,6 +2,7 @@ import {
   createProduct,
   deleteProduct,
   getProducts,
+  getTotalProductsCount,
   totalProducts,
   updateProduct,
 } from '@/controllers/product-controllers';
@@ -15,5 +16,6 @@ route.patch('/update', updateProduct);
 route.delete('/delete', deleteProduct);
 route.get('/totalProducts', totalProducts);
 route.get('/getProducts', getProducts)
+route.get('productCount', getTotalProductsCount)
 
 export default route;

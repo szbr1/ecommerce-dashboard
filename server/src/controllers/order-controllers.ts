@@ -1,9 +1,6 @@
 import prisma from '@/lib/db';
 import type { Request, Response } from 'express';
 
-/**
- * CREATE ORDER
- */
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const { userId, addressId } = req.body;
@@ -30,9 +27,6 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * DELETE ORDER
- */
 export const deleteOrder = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -54,9 +48,6 @@ export const deleteOrder = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * UPDATE ORDER STATUS OR TRACKING 
- */
 export const update = async (req: Request, res: Response) => {
     const {trackingId, orderId} = req.body;
   try {
@@ -83,9 +74,6 @@ export const update = async (req: Request, res: Response) => {
 };
 
 
-/**
- * TOTAL ORDERS COUNT
- */
 export const totalOrders = async (req: Request, res: Response) => {
   try {
     const count = await prisma.order.count();
@@ -102,9 +90,6 @@ export const totalOrders = async (req: Request, res: Response) => {
 };
 
 
-/**
- * GET ORDER
- */
 
 export const getOrder = async (req: Request, res: Response)=>{
   try {
@@ -124,3 +109,38 @@ export const getOrder = async (req: Request, res: Response)=>{
   } 
 }
 
+
+export const getTotalOrdersCount = async (req: Request, res: Response)=>{
+    try {
+        const result = prisma.order.count({
+          where: {
+            orderItems: {
+              some: {
+                storeId: 1 //Todo
+              }
+            }
+          }
+        })
+        res.status(200).json({message: "successfully get orders count", result})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: "unable to get orders count failed server is not responding"})
+    }
+}
+
+export const getTotalPositiveReviewsCount = async (req: Request, res: Response)=>{
+    try {
+        const result = prisma.review.count({
+          where: {
+           product: {
+            storeId: 1 // Todo
+           },
+           stars: {gte: 4}
+          }
+        })
+        res.status(200).json({message: "successfully get reviews count", result})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: "unable to get orders reviews failed server is not responding"})
+    }
+}

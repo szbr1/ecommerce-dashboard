@@ -260,3 +260,17 @@ export const topSellingProduct = async (req: Request, res: Response) => {
       .json({ message: 'all products fetch failed server is not responding' });
   }
 };
+
+export const getTotalProductsCount = async (req: Request, res: Response)=>{
+    try {
+        const result = prisma.product.findMany({
+          where: {
+            storeId: 1, // Todo
+          }
+        })
+        res.status(200).json({message: "successfully get products count", result})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message: "unable to get products count failed server is not responding"})
+    }
+}
