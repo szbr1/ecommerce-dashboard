@@ -62,6 +62,23 @@ export const deleteStore = async (req: Request, res: Response) => {
   }
 };
 
+export const getStore = async (req: Request, res: Response) => {
+  try {
+    const { storeId } = req.query;
+
+    const result = await prisma.store.findFirst({
+      where: { id: Number(storeId) },
+    });
+
+    return res
+      .status(200)
+      .json({ message: 'successfully fetched the store', result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'unsuccessfully while fetching store' });
+  }
+};
+
 export const totalStores = async (req: Request, res: Response) => {
   try {
     const result = await prisma.store.count();
