@@ -7,6 +7,17 @@ export default [
   ...nextVitals,
   ...nextTs,
   {
+  "rules": {
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ]
+  }
+},
+  {
     ignores: [
       '.next/**',
       'out/**',

@@ -9,7 +9,10 @@ const productApi = api.injectEndpoints({
         getStore: builder.query( ({
             query: ()=> "api/store/getStore?storeId=1",
             providesTags: ['Store'],
-        }))
+        })),
+        getTotalFollowersCount: builder.query({
+            query: ()=> "api/order/getTotalFollowersCount"
+        })
     }),
     overrideExisting: false
 })

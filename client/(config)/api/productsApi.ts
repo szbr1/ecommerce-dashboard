@@ -36,6 +36,10 @@ const productApi = api.injectEndpoints({
         `api/product/getProducts?storeId=1&limit=${limit}&page=${page}`,
       providesTags: ['Products'],
     }),
+
+    getTotalCountProducts : builder.query({
+      query: ()=>"api/product/totalProductsCount"
+    })
   }),
 
   overrideExisting: false,
@@ -46,4 +50,5 @@ export const {
   useCreateProductMutation,
   useDeleteProductMutation,
   useGetProductsQuery,
+  useGetTotalCountProductsQuery
 } = productApi;
