@@ -16,6 +16,6 @@ route.patch('/update', updateProduct);
 route.delete('/delete', deleteProduct);
 route.get('/totalProducts', totalProducts);
 route.get('/getProducts', getProducts)
-route.get('productCount', getTotalProductsCount)
+route.get('/productCount', getTotalProductsCount)
 
 export default route;
