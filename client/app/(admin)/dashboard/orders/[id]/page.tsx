@@ -2,7 +2,7 @@
 import { useGetOrderQuery } from '@/(config)/api/ordersApi';
 
 function page() {
-  const { data: order, isLoading, isError } = useGetOrderQuery({});
+  const { data: order, isLoading, isError } = useGetOrderQuery();
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
   console.log('data:', order);

@@ -6,7 +6,6 @@ import bcrypt from 'bcryptjs'
 
 export const singUp = async (req: Request, res: Response)=>{
     try {
-        console.log("hello")
         const {email , password, name} = req.body;
 
         if(!email || !password || !name){

@@ -1,5 +1,5 @@
 
-import { createStore, deleteStore, getStore,  storeOrders, allCustomers, totalSales, totalStores, updateStore, lastweekSales, lastyearSales } from '@/controllers/store-controllers';
+import { createStore, deleteStore, getStore,  updateStore, } from '@/controllers/store-controllers';
 import express from 'express';
 import type { Router } from 'express';
 
@@ -9,10 +9,3 @@ route.post('/create', createStore);
 route.post('/update', updateStore);
 route.delete('/delete', deleteStore);
 route.get('/getStore', getStore)
-route.get('/totalStores', totalStores);
-route.get('/storeOrdes', storeOrders)
-route.patch('/totalSales', totalSales);
-route.patch("/totalClients", allCustomers)
-route.patch('/lastweekSales', lastweekSales)
-route.patch('/lastyearSales', lastyearSales)
-export default route;
