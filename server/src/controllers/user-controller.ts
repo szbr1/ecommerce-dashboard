@@ -29,16 +29,27 @@ export const createProfile = async (req: Request, res: Response)=>{
     }
 }
 
+type CloudinaryType = Express.Multer.File & {path: string};
 export const updateProfile = async (req: Request, res: Response)=>{
     try {
-        const {imageUrl, description, userId} = req.body;
-        const result = await prisma.userProfile.update({
-            where: {userId},
+        const file = req.file as CloudinaryType
+
+     const result =  await prisma.user.update({
+            where: {
+                id: 1 // Todo
+            },
             data: {
-                imageUrl,
-                description,
+                profile: {
+                    connect: {
+                        userId: 1, // Todo
+                        imageUrl: file.path
+                    }
+                }
             }
-        })      
+        })
+
+        
+        
         res.status(200).json({message: "successfully created profile", result})
     } catch (error) {
         console.error(error)

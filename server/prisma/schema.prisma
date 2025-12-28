@@ -243,7 +243,7 @@ model Review {
  stars Int
  comments Comment[]
  user User @relation(fields: [userId], references: [id])
- product Product @relation(fields: [productId], references: [id])
+ product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
  @@unique([userId, productId])
 }
 
