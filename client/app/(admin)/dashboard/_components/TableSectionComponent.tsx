@@ -17,7 +17,6 @@ import {
 import { cn } from '@/lib/utils';
 import { Order } from '@/utils/ApiTypes';
 import { GetDate, handleEditabble } from '@/utils/StoreUtils';
-import { OrdersInterface } from '@/utils/types';
 import { useRouter } from 'next/navigation';
 
 function TableSectionComponent({ orders }: { orders: Order[] }) {

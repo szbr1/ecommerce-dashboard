@@ -17,7 +17,6 @@ function Page() {
   if(isLoading) return <div>Loading...</div>
   if(isError) return <div>Error</div>
   
-  debugger;
 
   return (
       <div className="gap-3 p-3 flex flex-col">

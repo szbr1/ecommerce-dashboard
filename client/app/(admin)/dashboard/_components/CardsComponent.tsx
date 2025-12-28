@@ -18,11 +18,10 @@ interface Props {
 function CardsComponent({cols }: Props) {
   const { data: ordersCount } = useGetOrderCountsQuery();
   const { data: paymentsCount } = useGetPaymentCountsQuery();
-  const { data: reviewsCount } = useGetAllReviewsQuery({});
+  const { data: reviewsCount } = useGetAllReviewsQuery();
 
 
   if(!ordersCount || !paymentsCount || !reviewsCount) return <div>wait</div>
-  debugger;
   return (
     <div
       className={cn(
@@ -50,7 +49,7 @@ function CardsComponent({cols }: Props) {
       <Card>
         <CardHeader>
           <CardTitle className="">Positve Reviews</CardTitle>
-          <CardDescription>{reviewsCount.reviews && reviewsCount.result.length}</CardDescription>
+          <CardDescription>{reviewsCount && reviewsCount.length}</CardDescription>
         </CardHeader>
       </Card>
 

@@ -5,7 +5,7 @@ import TableSectionComponent from './TableSectionComponent';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import { DeliveryStatus, OrdersInterface, PaymentStatus} from '@/utils/types';
+import { DeliveryStatus, PaymentStatus} from '@/utils/types';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Order } from '@/utils/ApiTypes';
 

@@ -48,14 +48,16 @@ export interface OrdersInterface {
 
 export interface Review {
   id: number;
-  text: string;
-  starRating: number; // 1–5
+  comment: string;
+  stars: number; // 1–5
   createdAt: string;
   updatedAt: string;
   user: {
     name: string;
     email: string;
-    imageUrl: string;
+    profile: {
+      imageUrl: string;
+    }
   };
 }
 

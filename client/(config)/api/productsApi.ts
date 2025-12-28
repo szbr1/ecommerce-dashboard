@@ -1,3 +1,4 @@
+import { Review } from '@/utils/types';
 import { api } from './api';
 
 const productApi = api.injectEndpoints({
@@ -40,7 +41,7 @@ const productApi = api.injectEndpoints({
     getTotalCountProducts : builder.query({
       query: ()=>"api/product/productCount"
     }),
-    getAllReviews : builder.query({
+    getAllReviews : builder.query<Review[], void>({
       query: ()=> "api/product/getAllReviews"
     })
   }),

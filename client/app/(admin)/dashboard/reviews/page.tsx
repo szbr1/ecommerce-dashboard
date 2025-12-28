@@ -15,15 +15,14 @@ import Link from 'next/link';
 import { FaStar } from 'react-icons/fa';
 
 function Page() {
-  const {data: reviews, isLoading, isError} = useGetAllReviewsQuery({});
+  const {data: reviews, isLoading, isError} = useGetAllReviewsQuery();
 
   if(isLoading) return <div>Loading...</div>
   if(isError) return <div>Error</div>
 
-  debugger;
   return ( 
     <div className="flex justify-center flex-col gap-3 py-5 px-2 md:px-3 lg:px-4">
-      {reviews.result && reviews.result.map(review => (
+      {reviews && reviews.map(review => (
         <Card className="flex py-2 lg:py-4  justify-between flex-row">
           <CardHeader className="w-full">
             <div className="flex gap-3 items-center">
