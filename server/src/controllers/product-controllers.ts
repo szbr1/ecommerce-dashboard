@@ -3,21 +3,23 @@ import prisma from '@/lib/db';
 import { Prisma } from '@prisma/client';
 import type { Request, Response } from 'express';
 
+type CloudinaryFile = Express.Multer.File & {path: string};
+
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    // 1. Check if files exist early
-    const files = req.files as Express.Multer.File[];
+  
+    const files = req.files as CloudinaryFile[];
     if (!files || files.length === 0) {
       return res.status(400).json({ message: "No images provided" });
     }
 
-    // 2. Destructure body
+  
     const { title, description, price, stock, size, category } = req.body;
 
-    // 3. Map Cloudinary URLs
-    // Note: 'path' is provided by multer-storage-cloudinary. 
-    // If using memoryStorage, this will be undefined (see step 2 below).
-    const imagesUrl = files.map((file: any) => file.path);
+    //  Map Cloudinary URLs
+    // 'path' is provided by multer-storage-cloudinary. 
+    // If using memoryStorage, this will be undefined
+    const imagesUrl = files.map((file) => file.path);
 
     console.log("Uploaded URLs:", imagesUrl);
 

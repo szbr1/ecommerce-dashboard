@@ -47,7 +47,7 @@ async function main() {
   });
 
   // 4. Create Address
-  const address = await prisma.address.create({
+  await prisma.address.create({
     data: {
       userId: user.id,
       profileId: profile.id,

@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card';
+import { CgSpinner } from 'react-icons/cg';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
   Field,
@@ -34,19 +35,21 @@ interface FormDataKeys {
   description: string;
   imagesUrl: File[];
   category: string;
-  price: string,
-  quantity: string
-  size: string
+  price: string;
+  quantity: string;
+  size: string;
 }
 
 interface Props {
-  isCreateProductPopUpOpen: boolean
-  setIsCreateProductPopUpOpen: (state: boolean) => void
+  isCreateProductPopUpOpen: boolean;
+  setIsCreateProductPopUpOpen: (state: boolean) => void;
 }
 
-function OpenDialog({isCreateProductPopUpOpen, setIsCreateProductPopUpOpen}:Props) {
- 
-  const [createProduct, {isError, isLoading}] = useCreateProductMutation()
+function OpenDialog({
+  isCreateProductPopUpOpen,
+  setIsCreateProductPopUpOpen,
+}: Props) {
+  const [createProduct, { isError, isLoading }] = useCreateProductMutation();
   const [blobPreview, setBlobPreview] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState<FormDataKeys>({
@@ -54,10 +57,10 @@ function OpenDialog({isCreateProductPopUpOpen, setIsCreateProductPopUpOpen}:Prop
     description: '',
     imagesUrl: [],
     stock: '',
-    quantity: "",
-    price: "",
+    quantity: '',
+    price: '',
     category: '',
-    size: ''
+    size: '',
   });
   const convertFileIntoUrl = (files: File[]) => {
     const previews = files.map(file => URL.createObjectURL(file));
@@ -70,7 +73,7 @@ function OpenDialog({isCreateProductPopUpOpen, setIsCreateProductPopUpOpen}:Prop
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const printAllTheData = async() => {
+  const printAllTheData = async () => {
     setFormData(prev => ({ ...prev, imagesUrl: files }));
     console.log('---formdata:', formData);
 
@@ -91,34 +94,35 @@ function OpenDialog({isCreateProductPopUpOpen, setIsCreateProductPopUpOpen}:Prop
     }
     // ---
 
-    const fData = new FormData()
-    fData.append("title", formData.title);
-    fData.append("description", formData.description);
-    fData.append("stock", formData.stock);
-    fData.append("price", formData.price)
+    const fData = new FormData();
+    fData.append('title', formData.title);
+    fData.append('description', formData.description);
+    fData.append('stock', formData.stock);
+    fData.append('price', formData.price);
     fData.append('quantity', formData.quantity);
-    fData.append('size', formData.size)
-    fData.append('category', formData.category)
+    fData.append('size', formData.size);
+    fData.append('category', formData.category);
 
     files.forEach(file => {
-      fData.append("imagesUrl", file)
-    })
+      fData.append('imagesUrl', file);
+    });
 
     console.log(fData);
     // 4. Send to RTK Query
-  try {
-    await createProduct(fData).unwrap();
-    toast.success('Product created successfully!');
-  } catch (err) {
-    toast.error('Failed to create product');
-    console.error(err);
-  }
+    try {
+      await createProduct(fData).unwrap();
+      toast.success('Product created successfully!');
+    } catch (err) {
+      toast.error('Failed to create product');
+      console.error(err);
+    }
   };
 
-  
-
   return (
-    <Dialog open={isCreateProductPopUpOpen} onOpenChange={()=> setIsCreateProductPopUpOpen(false)}>
+    <Dialog
+      open={isCreateProductPopUpOpen}
+      onOpenChange={() => setIsCreateProductPopUpOpen(false)}
+    >
       <DialogContent className="overflow-y-scroll h-[calc(100vh-100px)]">
         <FieldSet>
           <FieldLegend> Create Product </FieldLegend>
@@ -152,7 +156,6 @@ function OpenDialog({isCreateProductPopUpOpen, setIsCreateProductPopUpOpen}:Prop
           )}
 
           <FieldGroup>
-            
             {/* // PRODUCT TITLE */}
             <Field>
               <FieldLabel>Product Title</FieldLabel>
@@ -176,7 +179,7 @@ function OpenDialog({isCreateProductPopUpOpen, setIsCreateProductPopUpOpen}:Prop
 
             {/* // PRODUCT QUANTITY */}
             <Field className="grid grid-cols-3 gap-3 items-center">
-               <div>
+              <div>
                 <FieldLabel>Quantity</FieldLabel>
                 <Input
                   placeholder="Price"
@@ -245,7 +248,15 @@ function OpenDialog({isCreateProductPopUpOpen, setIsCreateProductPopUpOpen}:Prop
               convertFileIntoUrl={convertFileIntoUrl}
               setFiles={setFiles}
             />
-            <Button disabled={isLoading}  onClick={printAllTheData}>{isLoading ? "Loading...": "Submit"}</Button>
+            <Button disabled={isLoading} onClick={printAllTheData}>
+              {isLoading ? (
+                <CgSpinner className="animate-spin" />
+              ) : isError ? (
+                'Try Again'
+              ) : (
+                'Submit'
+              )}
+            </Button>
           </FieldGroup>
         </FieldSet>
       </DialogContent>
