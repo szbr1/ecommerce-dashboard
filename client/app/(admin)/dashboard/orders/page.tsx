@@ -1,8 +1,9 @@
-import { orders } from "@/constants/orders"
 import CardRowSectionComponent from "../_components/CardRowSectionComponent"
 import TableComponent from "../_components/TableComponent"
+import { useGetOrdersQuery } from "@/(config)/api/ordersApi"
 
 function Page() {
+  const {data: orders} = useGetOrdersQuery({})
   return (
     <div className="flex flex-col">
      
