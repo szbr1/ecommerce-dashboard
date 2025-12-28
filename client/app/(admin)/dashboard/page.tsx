@@ -10,7 +10,7 @@ function page() {
   return (
     <div className="min-h-screen w-full  flex flex-col p-3">
       
-      <CardsComponent Analysis={data} cols />
+      <CardsComponent cols />
 
       <div className="mt-8 grid gap-2 grid-cols-2 lg:grid-cols-3 ">
         {/* TOP STORES  */}

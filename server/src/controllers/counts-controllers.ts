@@ -93,7 +93,7 @@ export const getPaymentPageCounts = async (req: Request, res: Response) => {
 
       return {
         TotalSales: TotalSales._sum.amount !== null ? FailedSale._sum.amount : 0,
-        FailedSale: FailedSale._sum.amount !== null ? FailedSale._sum.amount : 0,
+        FailedSales: FailedSale._sum.amount !== null ? FailedSale._sum.amount : 0,
         ReturnSales: ReturnSales._sum.amount !== null ? ReturnSales._sum.amount: 0,
       };
     });

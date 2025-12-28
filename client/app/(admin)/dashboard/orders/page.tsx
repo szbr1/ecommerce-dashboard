@@ -13,7 +13,10 @@ function Page() {
     <div className="flex flex-col">
      
      <CardRowSectionComponent/>
-     <TableComponent orders={data}/>
+     {
+      data && <TableComponent orders={data}/>
+     }
+     
     </div>
   )
 }

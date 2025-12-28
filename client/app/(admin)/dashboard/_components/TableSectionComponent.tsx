@@ -15,11 +15,12 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { Order } from '@/utils/ApiTypes';
 import { GetDate, handleEditabble } from '@/utils/StoreUtils';
 import { OrdersInterface } from '@/utils/types';
 import { useRouter } from 'next/navigation';
 
-function TableSectionComponent({ orders }: { orders: OrdersInterface[] }) {
+function TableSectionComponent({ orders }: { orders: Order[] }) {
 
   const route = useRouter()
   
@@ -87,10 +88,10 @@ function TableSectionComponent({ orders }: { orders: OrdersInterface[] }) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="DELIEVERED">delivered</SelectItem>
-                      <SelectItem value="PENDING">pending</SelectItem>
-                      <SelectItem value="SHIPPED">shipped</SelectItem>
-                      <SelectItem value="CANCELLED">cancelled</SelectItem>
+                      <SelectItem value="DELIVERED">Delivered</SelectItem>
+                      <SelectItem value="PENDING">Pending</SelectItem>
+                      <SelectItem value="SHIPPED">Shipped</SelectItem>
+                      <SelectItem value="CANCELLED">Cancelled</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>

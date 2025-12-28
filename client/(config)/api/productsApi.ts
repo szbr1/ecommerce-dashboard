@@ -39,6 +39,9 @@ const productApi = api.injectEndpoints({
 
     getTotalCountProducts : builder.query({
       query: ()=>"api/product/productCount"
+    }),
+    getAllReviews : builder.query({
+      query: ()=> "api/product/getAllReviews"
     })
   }),
 
@@ -50,5 +53,6 @@ export const {
   useCreateProductMutation,
   useDeleteProductMutation,
   useGetProductsQuery,
-  useGetTotalCountProductsQuery
+  useGetTotalCountProductsQuery,
+  useGetAllReviewsQuery
 } = productApi;

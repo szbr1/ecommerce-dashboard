@@ -1,13 +1,13 @@
-import { Order } from "@/utils/StoreApiTypes";
+import { Order } from "@/utils/ApiTypes";
 import { api } from "./api";
 
 export const OrderApi = api.injectEndpoints({
     endpoints: (builder)=>({
-        getOrder : builder.query<Order, void>({
+        getOrder : builder.query<Order[], void>({
             query: ()=> "api/order/getOrder",
             providesTags: ["Orders"]
         }),
-        getOrders: builder.query({
+        getOrders: builder.query<Order[], void>({
             query: ()=> "api/order/getOrders"
         }),
         getTotalOrdersCount : builder.query({

@@ -5,12 +5,13 @@ import TableSectionComponent from './TableSectionComponent';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import { DeliveryStatus, OrdersInterface} from '@/utils/types';
+import { DeliveryStatus, OrdersInterface, PaymentStatus} from '@/utils/types';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Order } from '@/utils/ApiTypes';
 
-function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) {
+function TableComponent({orders, rm}: {orders: Order[], rm?:boolean}) {
   const [searchText, setSearchText] = useState('');
-  const [filteredOrders, setFilteredOrders] = useState<OrdersInterface[]>(orders);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
 
 
    if(!orders) return <div>Nothing</div>
@@ -18,20 +19,17 @@ function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) 
 
     const searchResults = filteredOrders.filter(order => {
       return (
-        order.id == searchText ||
+        order.id == Number(searchText) ||
         order.user.name.toLowerCase().includes(searchText.toLowerCase())
       );
     });
 
-   const filterProducts = (status: DeliveryStatus) => {
+   const filterByDeliveryStatus = (status: DeliveryStatus) => {
     return searchResults.filter(order => order.deliveryStatus === status );
   };
 
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      console.log(filterProducts(DeliveryStatus.DELIVERED))
-    }
+   const filterByPaymentStatus = (status: PaymentStatus) => {
+    return searchResults.filter(order => order.paymentStatus === status );
   };
 
   const handleDateChange = (value: string)=>{
@@ -83,7 +81,6 @@ function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) 
             </Select>
             <Input
               value={searchText}
-              onKeyDown={handleKeyDown}
               onChange={e => setSearchText(e.target.value)}
               placeholder="Search"
               className="pr-7 w-full md:w-3/4"
@@ -94,27 +91,27 @@ function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) 
         
 
         <TabsContent value="all">
-          <TableSectionComponent orders={orders} />
+          <TableSectionComponent orders={searchResults} />
         </TabsContent>
           
-          <TabsContent value="pending">
-          <TableSectionComponent orders={filterProducts(DeliveryStatus.PENDING)} />
+          <TabsContent value="paid">
+          <TableSectionComponent orders={filterByPaymentStatus(PaymentStatus.PAID)} />
         </TabsContent>
 
-        <TabsContent value="completed">
-          <TableSectionComponent orders={filterProducts(DeliveryStatus.SHIPPED)} />
-        </TabsContent>
-
-        <TabsContent value="delivered">
-          <TableSectionComponent orders={filterProducts(DeliveryStatus.DELIVERED)} />
+        <TabsContent value="unpaid">
+          <TableSectionComponent orders={filterByPaymentStatus(PaymentStatus.UNPAID)} />
         </TabsContent>
 
         <TabsContent value="return">
-          <TableSectionComponent orders={filterProducts(DeliveryStatus.RETURN)} />
+          <TableSectionComponent orders={filterByPaymentStatus(PaymentStatus.RETURN)} />
+        </TabsContent>
+
+        <TabsContent value="deleivered">
+          <TableSectionComponent orders={filterByDeliveryStatus(DeliveryStatus.DELIVERED)} />
         </TabsContent>
 
         <TabsContent value="failed">
-          <TableSectionComponent orders={filterProducts(DeliveryStatus.FAILED)} />
+          <TableSectionComponent orders={filterByDeliveryStatus(DeliveryStatus.CANCELLED)} />
         </TabsContent>
       </Tabs>
     </div>
