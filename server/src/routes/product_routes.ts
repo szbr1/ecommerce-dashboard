@@ -1,6 +1,7 @@
 import {
   createProduct,
   deleteProduct,
+  getAllreviews,
   getProducts,
   totalProducts,
   updateProduct,
@@ -11,10 +12,11 @@ import type { Router } from 'express';
 
 const route: Router = express.Router();
 
-route.post('/create',upload.array("imagesUrl",5), createProduct);
+route.post('/create', upload.array('imagesUrl', 5), createProduct);
 route.patch('/update', updateProduct);
 route.delete('/delete', deleteProduct);
 route.get('/totalProducts', totalProducts);
-route.get('/getProducts', getProducts)
+route.get('/getProducts', getProducts);
+route.get('/getAllReviews', getAllreviews);
 
 export default route;

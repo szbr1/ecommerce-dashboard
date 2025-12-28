@@ -11,7 +11,7 @@ import StoreRoutes from "./routes/store_rotes"
 import CategoryRotues from "./routes/category_routes"
 import OrderRoutes from "./routes/order_routes"
 import UserRoutes from "./routes/user_routes"
-
+import CountRoutes from "./routes/count_routes"
 
 const PORT = process.env.PORT || 4000;
 dotenv.config();
@@ -39,6 +39,7 @@ app.use("/api/store", StoreRoutes)
 app.use("/api/category", CategoryRotues)
 app.use("/api/order", OrderRoutes)
 app.use("/api/user", UserRoutes)
+app.use("/api/count", CountRoutes)
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
