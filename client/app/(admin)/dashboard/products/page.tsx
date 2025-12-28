@@ -2,7 +2,7 @@
 
 import ShortHeader from '../_components/header';
 import ProductGridCol from '../_components/productsGridCol';
-import { useGetProductsQuery } from '@/(config)/api/productsApi';
+import {useGetProductsQuery } from '@/(config)/api/productsApi';
 
 
 function Page() {

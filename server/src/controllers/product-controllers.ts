@@ -5,67 +5,42 @@ import type { Request, Response } from 'express';
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const {
-      title,
-      description,
-      price,
-      stock,
-      imageUrl,
-      categoryId,
-      storeId,
-    } = req.body;
-
-    let imagesUrl: string[] = [];
- 
-    // SINGLE IMAGE UPLOAD
-    if (typeof imageUrl === 'string' && imageUrl.trim()) {
-       const imageData = await cloudinary.uploader.upload(imageUrl, {
-       folder: "products"
-       })
-
-       imagesUrl = [imageData.secure_url]
-    }
-    // MULTIPLE IMAGES UPLOAD
-    if (Array.isArray(imageUrl)) {
-
-      const filterImages = imageUrl.filter(
-        img => typeof img === 'string' && img.trim().length > 0
-      );
-
-      const uploading = filterImages.map(async img => {
-        return await cloudinary.uploader.upload(img, { folder: 'products' });
-      });
-
-      const uploadingResult = await Promise.all(uploading);
-      imagesUrl = uploadingResult.map(i => i.secure_url);
+    // 1. Check if files exist early
+    const files = req.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+      return res.status(400).json({ message: "No images provided" });
     }
 
+    // 2. Destructure body
+    const { title, description, price, stock, size, category } = req.body;
 
+    // 3. Map Cloudinary URLs
+    // Note: 'path' is provided by multer-storage-cloudinary. 
+    // If using memoryStorage, this will be undefined (see step 2 below).
+    const imagesUrl = files.map((file: any) => file.path);
+
+    console.log("Uploaded URLs:", imagesUrl);
+
+    // 4. Database Insertion
     const result = await prisma.product.create({
       data: {
         title,
         description,
-        price,
-        stock,
-        imagesUrl,
-        store: {
-          connect: {
-            id: storeId,
-          },
-        },
+        price: Number(price),
+        stock: Number(stock),
+        imagesUrl, 
+        size,
+        store: { connect: { id: 1 } },
         category: {
-          connect: {
-            id: categoryId,
-          },
+          create: { name: category },
         },
       },
     });
-    res.status(200).json({ message: 'successfully created product', result });
+
+    res.status(200).json({ message: 'Product created successfully', result });
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: 'product retreivig failed server is not responding' });
+    console.error("Creation Error:", error);
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 

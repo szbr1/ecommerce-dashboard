@@ -143,7 +143,7 @@ model Product {
   description String?
   imagesUrl   String[]
   colors      String[]
-  size        String[]
+  size        String?
 
   price       Decimal
   stock       Int

@@ -4,25 +4,9 @@ import { StoresSalesChart } from '../_components/top-stores';
 import LastOrders from '../_components/latest-orders';
 import { RevenueGraph } from '../_components/revenue-graph';
 import CardsComponent from './_components/CardsComponent';
-const data = [
-  {
-    count: 100,
-    name: 'Total Stores',
-  },
-  {
-    count: 5888,
-    name: 'Total Products',
-  },
-  {
-    count: 499,
-    name: 'Total Users',
-  },
-  {
-    count: 20,
-    name: 'Total Categories',
-  },
-];
+
 function page() {
+  
   return (
     <div className="min-h-screen w-full  flex flex-col p-3">
       
