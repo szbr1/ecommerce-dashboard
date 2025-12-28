@@ -1,5 +1,5 @@
 
-import { createOrder, deleteOrder,  getOrder, totalOrders, update,  } from "../controllers/order-controllers"
+import { createOrder, deleteOrder, getOrders,  getOrder, totalOrders, update,  } from "../controllers/order-controllers"
 import type { Router } from "express";
 import express from "express";
 
@@ -11,4 +11,5 @@ route.delete('/delete', deleteOrder);
 route.get('/totalOrders', totalOrders);
 route.patch('/updateOrder', update)
 route.get('/getOrder', getOrder)
+route.get('/getOrders', getOrders)
 export default route

@@ -1,28 +1,20 @@
-import {
-  PrismaClient,
-} from '@prisma/client';
+import { PrismaClient, UserRole, StoreStatus, StoreRoles, DeliveryStatus, PaymentStatus } from '@prisma/client';
 import { config } from 'dotenv';
 import { PrismaPg } from '@prisma/adapter-pg';
-
-import { UserRole, StoreStatus, StoreRoles } from '@prisma/client';
-
-
 
 config();
 const connectionString = process.env.DATABASE_URL as string;
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
-
-
 async function main() {
   console.log("Emptying database...");
   
-  // Robust Reset for PostgreSQL
+  // Clean up existing data
   await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Comment", "Review", "OrderItem", "Order", "ProductPriceHistory", "Product", "Category", "StoreAccess", "Follower", "StoreProfile", "Store", "Contact", "Address", "UserProfile", "manyUsers", "Role", "User", "StoreCounts" RESTART IDENTITY CASCADE;`);
 
   // 1. Create Roles
-   await prisma.role.create({ data: { name: UserRole.ADMIN } });
+ await prisma.role.create({ data: { name: UserRole.ADMIN } });
   const userRole = await prisma.role.create({ data: { name: UserRole.USER } });
   const superAdminRole = await prisma.role.create({ data: { name: UserRole.SUPER_ADMIN } });
 
@@ -36,7 +28,6 @@ async function main() {
 
   // 3. Seed Loop
   for (let i = 1; i <= 5; i++) {
-    // Create User first
     const user = await prisma.user.create({
       data: {
         name: `User ${i}`,
@@ -48,7 +39,6 @@ async function main() {
       }
     });
 
-    // Create Profile second
     const profile = await prisma.userProfile.create({
       data: {
         userId: user.id,
@@ -57,7 +47,6 @@ async function main() {
       }
     });
 
-    // Create Contact (Linked to both)
     await prisma.contact.create({
       data: {
         userId: user.id,
@@ -67,8 +56,7 @@ async function main() {
       }
     });
 
-    // Create Addresses
-    await prisma.address.create({
+    const address = await prisma.address.create({
       data: {
         userId: user.id,
         profileId: profile.id,
@@ -79,7 +67,6 @@ async function main() {
       }
     });
 
-    // 4. Store
     const store = await prisma.store.create({
       data: {
         userId: user.id,
@@ -97,8 +84,9 @@ async function main() {
       }
     });
 
-    // 5. Products & History
-    for (let p = 1; p <= 5; p++) {
+    // 4. Products
+    const createdProducts = [];
+    for (let p = 1; p <= 3; p++) {
       const product = await prisma.product.create({
         data: {
           title: `Product ${p} - Store ${i}`,
@@ -113,8 +101,8 @@ async function main() {
           }
         }
       });
+      createdProducts.push(product);
 
-      // 6. Review
       await prisma.review.create({
         data: {
           userId: user.id,
@@ -124,9 +112,32 @@ async function main() {
         }
       });
     }
+
+    // 5. Orders & OrderItems (Fixed relations)
+    const order = await prisma.order.create({
+      data: {
+        userId: user.id,
+        addressId: address.id,
+        deliveryStatus: DeliveryStatus.PENDING,
+        paymentStatus: PaymentStatus.PAID,
+        trackingId: `TRK-${Math.random().toString(36).substring(7).toUpperCase()}`,
+      }
+    });
+
+    for (const prod of createdProducts) {
+      await prisma.orderItem.create({
+        data: {
+          orderId: order.id,
+          productId: prod.id,
+          storeId: store.id,
+          quantity: 2,
+          productAtPrice: prod.price
+        }
+      });
+    }
   }
 
-  console.log("✅ Seed successful with complex relations.");
+  console.log("✅ Seed successful: Users, Stores, Products, Orders, and OrderItems created.");
 }
 
 main()

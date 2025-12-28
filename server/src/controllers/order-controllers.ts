@@ -109,4 +109,39 @@ export const getOrder = async (req: Request, res: Response)=>{
   } 
 }
 
+export const getOrders = async (req: Request, res: Response) => {
+  try {
+  
 
+    const result = await prisma.order.findMany({
+      where: {
+        orderItems: {
+          some: {
+            storeId: 1 // Todo
+          }
+        }
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true
+          }
+        },
+        orderItems: {
+          where: {
+            storeId:1 // Todo
+          },
+          include: {
+            product: true
+          }
+        }
+      }
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json("Failed while getting orders");
+  } 
+};

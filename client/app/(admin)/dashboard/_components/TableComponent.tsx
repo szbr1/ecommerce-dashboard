@@ -5,32 +5,32 @@ import TableSectionComponent from './TableSectionComponent';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import { OrdersInterface } from '@/utils/types';
+import { DeliveryStatus, OrdersInterface} from '@/utils/types';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) {
   const [searchText, setSearchText] = useState('');
   const [filteredOrders, setFilteredOrders] = useState<OrdersInterface[]>(orders);
 
-  type OrderStatus = 'paid' | 'unpaid' | 'return' | 'completed' | 'failed';
 
+   if(!orders) return <div>Nothing</div>
  
 
     const searchResults = filteredOrders.filter(order => {
       return (
         order.id == searchText ||
-        order.customerName.toLowerCase().includes(searchText.toLowerCase())
+        order.user.name.toLowerCase().includes(searchText.toLowerCase())
       );
     });
 
-   const filterProducts = (status: OrderStatus) => {
-    return searchResults.filter(order => order.status === status);
+   const filterProducts = (status: DeliveryStatus) => {
+    return searchResults.filter(order => order.deliveryStatus === status );
   };
 
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      console.log(filterProducts("completed"))
+      console.log(filterProducts(DeliveryStatus.DELIVERED))
     }
   };
 
@@ -47,7 +47,7 @@ function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) 
     const from = new Date(today);
     from.setDate(today.getDate() - fromDays);
 
-    const result = orders.filter(order => !(from > new Date(order.date)) )
+    const result = orders.filter(order => !(from > new Date(order.createdAt)) )
     setFilteredOrders(result)
     
   }
@@ -94,28 +94,27 @@ function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) 
         
 
         <TabsContent value="all">
-          <TableSectionComponent orders={searchResults} />
+          <TableSectionComponent orders={orders} />
         </TabsContent>
           
-
-        <TabsContent value="paid">
-          <TableSectionComponent orders={filterProducts('paid')} />
-        </TabsContent>
-
-        <TabsContent value="unpaid">
-          <TableSectionComponent orders={filterProducts('unpaid')} />
-        </TabsContent>
-
-        <TabsContent value="return">
-          <TableSectionComponent orders={filterProducts('return')} />
+          <TabsContent value="pending">
+          <TableSectionComponent orders={filterProducts(DeliveryStatus.PENDING)} />
         </TabsContent>
 
         <TabsContent value="completed">
-          <TableSectionComponent orders={filterProducts('completed')} />
+          <TableSectionComponent orders={filterProducts(DeliveryStatus.SHIPPED)} />
+        </TabsContent>
+
+        <TabsContent value="delivered">
+          <TableSectionComponent orders={filterProducts(DeliveryStatus.DELIVERED)} />
+        </TabsContent>
+
+        <TabsContent value="return">
+          <TableSectionComponent orders={filterProducts(DeliveryStatus.RETURN)} />
         </TabsContent>
 
         <TabsContent value="failed">
-          <TableSectionComponent orders={filterProducts('failed')} />
+          <TableSectionComponent orders={filterProducts(DeliveryStatus.FAILED)} />
         </TabsContent>
       </Tabs>
     </div>

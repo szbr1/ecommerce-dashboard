@@ -173,11 +173,28 @@ model ProductPriceHistory {
   price      Decimal
 }
 
+enum DeliveryStatus {
+  DELIVERED
+  PENDING
+  SHIPPED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  UNPAID
+  RETURN
+  FAILED
+}
+
 model Order {
   id         Int      @id @default(autoincrement())
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
   trackingId String?
+  deliveryStatus DeliveryStatus @default(PENDING)
+  paymentStatus PaymentStatus?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt()
   orderItems OrderItem[]

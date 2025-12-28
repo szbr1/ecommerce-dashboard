@@ -48,25 +48,25 @@ function TableSectionComponent({ orders }: { orders: OrdersInterface[] }) {
           orders.map(order => (
             <TableRow onClick={()=>route.push(`/dashboard/orders/${order.id}`)}>
               <TableCell>#{order.id}</TableCell>
-              <TableCell>{GetDate(order.date)}</TableCell>
-              <TableCell>{order.customerName}</TableCell>
+              <TableCell>{GetDate(order.createdAt)}</TableCell>
+              <TableCell>{order.user.name}</TableCell>
               <TableCell>
-                <Select defaultValue={order.status.toLowerCase()}>
+                <Select defaultValue={order.paymentStatus}>
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="paid">Paid</SelectItem>
-                      <SelectItem value="unpaid">Unpaid</SelectItem>
-                      <SelectItem value="return">Return</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="failed">Failed</SelectItem>
+                      <SelectItem value="PAID">Paid</SelectItem>
+                      <SelectItem value="UNPAID">Unpaid</SelectItem>
+                      <SelectItem value="RETURN">Return</SelectItem>
+                      <SelectItem value="COMPLETED">Completed</SelectItem>
+                      <SelectItem value="FAILED">Failed</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               </TableCell>
-              <TableCell>{order.amount}</TableCell>
+              <TableCell>1</TableCell>
               <TableCell>
                 <p
                   className={cn(
@@ -81,21 +81,21 @@ function TableSectionComponent({ orders }: { orders: OrdersInterface[] }) {
                 </p>
               </TableCell>
               <TableCell>
-                <Select defaultValue={order.deliveryStatus.toLowerCase()}>
+                <Select defaultValue={order.deliveryStatus}>
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="delivered">delivered</SelectItem>
-                      <SelectItem value="pending">pending</SelectItem>
-                      <SelectItem value="shipped">shipped</SelectItem>
-                      <SelectItem value="cancelled">cancelled</SelectItem>
+                      <SelectItem value="DELIEVERED">delivered</SelectItem>
+                      <SelectItem value="PENDING">pending</SelectItem>
+                      <SelectItem value="SHIPPED">shipped</SelectItem>
+                      <SelectItem value="CANCELLED">cancelled</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               </TableCell>
-              <TableCell>{order.email}</TableCell>
+              <TableCell>{order.user.email}</TableCell>
               <TableCell>N/A</TableCell>
               <TableCell>Hello</TableCell>
             </TableRow>
