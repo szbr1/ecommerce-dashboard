@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 interface ProductGridColProps {
   title: string;
-  imageUrl?: string[];
+  imagesUrl?: string[];
   price: number;
   stock: number;
   id: number;
@@ -23,9 +23,10 @@ function ProductGridCol({ products }: { products: ProductGridColProps[] }) {
             className="h-20 lg:h-20 py-2 px-2 lg:px-4 rounded-md border w-full flex justify-between items-center"
           >
             <div className="flex gap-2">
+              
               <div className="lg:w-15 lg:h-full flex justify-center items-center mt-0.75">
                 <Image
-                  src={product?.imageUrl?.[0] ?? '/avatar.png'}
+                  src={product?.imagesUrl?.[0] ?? '/avatar.png'}
                   height={40}
                   width={40}
                   alt=""
