@@ -1,4 +1,4 @@
-import { DeliveryStatus, PaymentStatus } from "./types";
+import { DeliveryStatus, PaymentStatus } from './types';
 
 export interface Address {
   zip?: string;
@@ -40,9 +40,7 @@ export interface Product {
   updatedAt: string; // ISO
 }
 
-
-
-export type AdminRole = "ADMIN" | "SUPER_ADMIN" | "MODERATOR";
+export type AdminRole = 'ADMIN' | 'SUPER_ADMIN' | 'MODERATOR';
 
 export interface AdminProfile {
   name: string;
@@ -54,32 +52,29 @@ export interface AdminProfile {
 }
 
 export interface PaymentCount {
-  TotalSales: number,
-  FailedSales: number,
-  ReturnSales: number
+  TotalSales: number;
+  FailedSales: number;
+  ReturnSales: number;
 }
 
 export interface OrderCount {
-  All: number,
-  Return: number,
-  Failed: number,
-  Completed: number
+  All: number;
+  Return: number;
+  Failed: number;
+  Completed: number;
 }
-
-
 
 export interface User {
   email: string;
   name: string;
 }
 
-
 export interface Order {
   id: number;
   addressId: number;
   amount: string;
-  deliveryStatus: DeliveryStatus
-  paymentStatus: PaymentStatus
+  deliveryStatus: DeliveryStatus;
+  paymentStatus: PaymentStatus;
   createdAt: string;
   updatedAt: string;
   trackingId: string;
@@ -88,20 +83,52 @@ export interface Order {
 }
 
 export interface RecentOrders {
-  id: number
-  amount: number
+  id: number;
+  amount: number;
   user: {
-    name: string
-    email: string
-  }
+    name: string;
+    email: string;
+  };
 }
 
 export interface ByMonthSales {
-  month: string
-  totalAmount: number
+  month: string;
+  totalAmount: number;
 }
 
 export interface ByYearSales {
-  year: number
-  totalAmount: number
+  year: number;
+  totalAmount: number;
+}
+
+export enum StoreStatus {
+  ACTIVE = 'ACTIVE',
+  DEACTIVATED = 'DEACTIVATED',
+  FROZEN = 'FROZEN',
+  DELETED = 'DELETED',
+}
+
+export interface StoreProfile {
+  storeId: number;
+  profile: {
+    name: string;
+    description: string;
+    avatarUrl: string | null;
+    banner: string | null;
+    brandshoot: string | null;
+    brandshootProduct1: string | null;
+    brandshootProduct2: string | null;
+  };
+  status: string
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+export interface IStore {
+  id: number;
+  status: StoreStatus;
+  userId: number;
+  profile: StoreProfile;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }

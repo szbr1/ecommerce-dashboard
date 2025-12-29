@@ -41,40 +41,73 @@ export const createStore = async (req: Request, res: Response) => {
 
 export const updateStore = async (req: Request, res: Response) => {
   try {
-    const {
-      name,
-      imageUrl,
-      description,
-      avatarUrl,
-      brandshoot,
-      brandshootProduct1,
-      brandshootProduct2,
-    } = req.body;
-
+    const { name, description } = req.body;
+    
+    // Files are in req.files when using upload.fields()
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    
+    console.log('Body:', req.body);
+    console.log('Files:', files);
+    
+    // Build the update data object dynamically
+    const updateData: {
+      name?: string;
+      description?: string;
+      banner?: string;
+      avatarUrl?: string;
+      brandshoot?: string;
+      brandshootProduct1?: string;
+      brandshootProduct2?: string;
+    } = {};
+    
+    // Add text fields if they exist
+    if (name) updateData.name = name;
+    if (description) updateData.description = description;
+    
+    // Add file URLs if they were uploaded
+    if (files?.poster?.[0]) {
+      updateData.banner = files.poster[0].path; // or .filename depending on your multer config
+    }
+    if (files?.avatarUrl?.[0]) {
+      updateData.avatarUrl = files.avatarUrl[0].path;
+    }
+    if (files?.brandshoot?.[0]) {
+      updateData.brandshoot = files.brandshoot[0].path;
+    }
+    if (files?.brandshootProduct1?.[0]) {
+      updateData.brandshootProduct1 = files.brandshootProduct1[0].path;
+    }
+    if (files?.brandshootProduct2?.[0]) {
+      updateData.brandshootProduct2 = files.brandshootProduct2[0].path;
+    }
+    
+    // Only update if there's data to update
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: 'No data to update' });
+    }
+    
     const result = await prisma.store.update({
-      where: { id: 1 }, // Todo
+      where: { id: 1 }, // TODO: Get from authenticated user
       data: {
         profile: {
-          connect: {
-            storeId: 1,
-            banner: imageUrl,
-            description,
-            avatarUrl,
-            brandshoot,
-            brandshootProduct1,
-            brandshootProduct2,
-            name,
-          },
+          update: updateData,
         },
       },
     });
-
-    return res
-      .status(200)
-      .json({ message: 'successfully updated stor', result });
+    
+    console.log(result, "---------------");
+    
+    return res.status(200).json({ 
+      message: 'Successfully updated store', 
+      result 
+    });
+    
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'unsuccessfully while updating' });
+    console.error('Update store error:', error);
+    res.status(500).json({ 
+      message: 'Error while updating store',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 

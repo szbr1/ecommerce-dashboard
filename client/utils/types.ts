@@ -1,7 +1,7 @@
 export interface FormDataInteface {
   name: string;
   description: string;
-  avatar: File | null;
+  avatarUrl: File | null;
   poster?: File | null;
   brandshoot?: File | null;
   brandshootProduct1?: File | null;
@@ -9,7 +9,7 @@ export interface FormDataInteface {
 }
 
 export interface PreviewImagesInteface {
-  avatar: string;
+  avatarUrl: string;
   brandshoot: string;
   brandshootProduct1: string;
   brandshootProduct2: string;

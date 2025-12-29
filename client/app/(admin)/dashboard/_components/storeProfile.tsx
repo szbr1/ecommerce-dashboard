@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { handleEditabble,} from '@/utils/StoreUtils';
+import type { StoreProfile } from '@/utils/ApiTypes';
+import { handleEditabble } from '@/utils/StoreUtils';
 import { FormDataInteface, PreviewImagesInteface } from '@/utils/types';
 import { Pen } from 'lucide-react';
 import React, { SetStateAction, useRef, useState } from 'react';
 
 interface StoreProfileProps {
-  store: { name: string; description: string; imageUrl: string };
+  store: StoreProfile;
   setFormData: React.Dispatch<SetStateAction<FormDataInteface>>;
   setImagesPreview: React.Dispatch<SetStateAction<PreviewImagesInteface>>;
   imagesPreviews: PreviewImagesInteface;
@@ -30,20 +31,21 @@ function StoreProfile({
     }
   };
 
-
   const handlePaste = (e: React.ClipboardEvent<HTMLParagraphElement>) => {
     e.preventDefault();
     const text = e.clipboardData.getData('text/plain');
     document.execCommand('insertText', false, text);
   };
 
- 
-
   return (
     <div className="flex gap-5">
       <div className="size-20 md:size-26 lg:size-32 shrink-0 relative rounded-full  border p-1">
         <img
-          src={`${imagesPreviews.avatar.length > 0 ? imagesPreviews.avatar : store.imageUrl}`}
+          src={
+            `${imagesPreviews.avatarUrl ? imagesPreviews.avatarUrl 
+            : store.profile.avatarUrl !== null ? store.profile.avatarUrl 
+            : '/avatar.png'}
+            `}
           alt=""
           height={50}
           width={50}
@@ -58,8 +60,8 @@ function StoreProfile({
             const file = e.target.files?.[0];
             if (file) {
               const blob = URL.createObjectURL(file);
-              setImagesPreview(prev => ({...prev, avatar: blob}))
-              setFormData(prev => ({...prev, avatar: file}))
+              setImagesPreview(prev => ({ ...prev, avatarUrl: blob }));
+              setFormData(prev => ({ ...prev, avatarUrl: file }));
             }
           }}
         />
@@ -78,13 +80,15 @@ function StoreProfile({
         <div className="flex items-center gap-3">
           <h1
             onKeyDown={handleKeyDown}
-            onBlur={e => setFormData((prev)=> ({...prev, name: e.target.innerText}))}
+            onBlur={e =>
+              setFormData(prev => ({ ...prev, name: e.target.innerText }))
+            }
             contentEditable={isNameEditable}
-            onInput={(e)=> handleEditabble(e , 10)}
+            onInput={e => handleEditabble(e, 10)}
             onPaste={handlePaste}
             className="text-xl md:text-2xl lg:text-3xl border-none outline-none focus:border-none focus:outline-none font-semibold"
           >
-            {store.name}
+            {store.profile.name}
           </h1>
           <Button
             className={cn(
@@ -104,11 +108,16 @@ function StoreProfile({
             contentEditable={isDescriptionEditable}
             onPaste={handlePaste}
             onKeyDown={handleKeyDown}
-            onInput={(e)=> handleEditabble(e, 200)}
-            onBlur={e => setFormData(prev => ({...prev, description: e.target.innerText}))}
+            onInput={e => handleEditabble(e, 200)}
+            onBlur={e =>
+              setFormData(prev => ({
+                ...prev,
+                description: e.target.innerText,
+              }))
+            }
             className="text-xs md:sm text-gray-300  max-w-45 md:max-w-50 lg:max-w-90 focus:outline-none"
           >
-            {store.description}
+            {store.profile.description}
           </p>
           <Button
             className={cn(
