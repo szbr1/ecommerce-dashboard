@@ -21,10 +21,10 @@ export const OrderApi = api.injectEndpoints({
     getRecnetOrders: builder.query<RecentOrders[], void>({
       query: () => 'api/order/getRecentOrders',
     }),
-    getSalesByYear: builder.query<ByYearSales, void>({
+    getSalesByYear: builder.query<ByYearSales[], void>({
       query: () => 'api/order/getSalesByYear',
     }),
-    getSalesByMonth: builder.query<ByMonthSales, void>({
+    getSalesByMonth: builder.query<ByMonthSales[], void>({
       query: () => 'api/order/getSalesByMonth',
     }),
   }),

@@ -2,8 +2,8 @@
 
 import { StoresSalesChart } from '../_components/top-stores';
 import LastOrders from '../_components/latest-orders';
-import { RevenueGraph } from '../_components/revenue-graph';
 import CardsComponent from './_components/CardsComponent';
+import { RevenueGraph } from '../_components/revenue-graph';
 
 function page() {
   
