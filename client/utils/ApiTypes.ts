@@ -86,3 +86,22 @@ export interface Order {
   user: User;
   orderItems: OrderItem[];
 }
+
+export interface RecentOrders {
+  id: number
+  amount: number
+  user: {
+    name: string
+    email: string
+  }
+}
+
+export interface ByMonthSales {
+  month: string
+  totalAmount: number
+}
+
+export interface ByYearSales {
+  year: number
+  totalAmount: number
+}
