@@ -7,9 +7,17 @@ const productApi = api.injectEndpoints({
             query: () => 'api/user/totalUsers',
             providesTags: ['User']
         }),
+        updateProfile : builder.mutation({
+            query: (data)=>({
+                url: "api/user/update",
+                body: data,
+                method: "PATCH"
+                
+            })
+        })
     }),
     overrideExisting: false
 })
 
-export const { useAllUsersCountQuery} = productApi
+export const { useAllUsersCountQuery, useUpdateProfileMutation} = productApi
 

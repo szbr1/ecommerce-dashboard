@@ -1,3 +1,4 @@
+import { useGetRecnetOrdersQuery } from '@/(config)/api/ordersApi';
 import {
   Table,
   TableBody,
@@ -7,55 +8,24 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-const orders = [
-  {
-    id: 1,
-    productName: 'Product 1',
-    price: '$100',
-    store: 'Store 1',
-  },
-  {
-    id: 2,
-    productName: 'Product 2',
-    price: '$200',
-    store: 'Store 2',
-  },
-  {
-    id: 3,
-    productName: 'Product 3',
-    price: '$300',
-    store: 'Store 3',
-  },
-  {
-    id: 4,
-    productName: 'Product 4',
-    price: '$400',
-    store: 'Store 4',
-  },
-  {
-    id: 5,
-    productName: 'Product 5',
-    price: '$500',
-    store: 'Store 5',
-  },
-];
 
 function LastOrders() {
+  const {data: orders} = useGetRecnetOrdersQuery()
   return (
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>name</TableHead>
-            <TableHead>price</TableHead>
-            <TableHead>store</TableHead>
+            <TableHead>Order Id</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Amount</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {orders.map(order => (
+          {orders && orders.map(order => (
             <TableRow key={order.id}>
-              <TableCell>{order.productName}</TableCell>
-              <TableCell>{order.price}</TableCell>
-              <TableCell>{order.store}</TableCell>
+              <TableCell>#{order.id}</TableCell>
+              <TableCell>{order.user.name}</TableCell>
+              <TableCell>{order.amount}</TableCell>
             </TableRow>
           ))}
         </TableBody>

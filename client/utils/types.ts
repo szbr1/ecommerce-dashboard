@@ -16,29 +16,48 @@ export interface PreviewImagesInteface {
   poster: string;
 }
 
+export enum DeliveryStatus {
+  PENDING = "PENDING",
+  SHIPPED = "SHIPPED",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED",
+}
+
+export enum PaymentStatus {
+  PENDING = "PENDING",
+  PAID = "PAID",
+  UNPAID = "UNPAID",
+  RETURN = "RETURN",
+  FAILED = "FAILED",
+}
+
+
 export interface OrdersInterface {
   id: string;
   customerName: string;
   email: string;
   product: string;
   amount: number;
-  status: 'paid' | 'unpaid' | 'return' | 'completed' | 'failed';
-  deliveryStatus: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+  paymentStatus: PaymentStatus;
+  deliveryStatus: DeliveryStatus;
   createdAt: string;
   orderId: string;
   trackingId?: string;
 }
 
+
 export interface Review {
   id: number;
-  text: string;
-  starRating: number; // 1–5
+  comment: string;
+  stars: number; // 1–5
   createdAt: string;
   updatedAt: string;
   user: {
     name: string;
     email: string;
-    imageUrl: string;
+    profile: {
+      imageUrl: string;
+    }
   };
 }
 

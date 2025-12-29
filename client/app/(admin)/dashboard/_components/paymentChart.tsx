@@ -9,38 +9,31 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart"
+import { useGetSalesByMonthQuery } from "@/(config)/api/ordersApi"
 
 export const description = "A linear area chart"
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-  { month: "July", desktop: 186 },
-  { month: "August", desktop: 305 },
-  { month: "Sep", desktop: 237 },
-  { month: "Oct", desktop: 73 },
-  { month: "Nov", desktop: 209 },
-  { month: "Dec", desktop: 214 }
-]
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
+
+export function PaymentChart() {
+  
+  const {data: chartData} = useGetSalesByMonthQuery();
+
+
+  const chartConfig = {
+  totalAmount: {
+    label: "totalAmount",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig
-
-export function PaymentChart() {
+  
+  
   return (
    
         <ChartContainer config={chartConfig}>
           <AreaChart
             accessibilityLayer
-            data={chartData}
+            data={chartData && chartData}
             margin={{
               left: 12,
               right: 12,
@@ -59,11 +52,11 @@ export function PaymentChart() {
               content={<ChartTooltipContent indicator="dot" hideLabel />}
             />
             <Area
-              dataKey="desktop"
+              dataKey="totalAmount"
               type="linear"
-              fill="var(--color-desktop)"
+              fill="var(--color-totalAmount)"
               fillOpacity={0.4}
-              stroke="var(--color-desktop)"
+              stroke="var(--color-totalAmount)"
             />
           </AreaChart>
         </ChartContainer>

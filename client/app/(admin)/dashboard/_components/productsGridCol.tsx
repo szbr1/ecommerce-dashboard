@@ -1,18 +1,32 @@
+import { useDeleteProductMutation } from '@/(config)/api/productsApi';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import Image from 'next/image';
+import { CgSpinner } from 'react-icons/cg';
 
 interface ProductGridColProps {
   title: string;
-  imageUrl?: string[];
+  imagesUrl?: string[];
   price: number;
   stock: number;
+  size?: string;
   id: number;
   createdAt: string;
   updatedAt: string;
 }
+
+
 function ProductGridCol({ products }: { products: ProductGridColProps[] }) {
   
+  const [deleteProduct , {isLoading} ] = useDeleteProductMutation();
+
+const handleDelete = async(productId: number)=>{
+  
+ const res = await deleteProduct({productId})
+ console.log("success")
+ console.log(res.data);
+}
+
 
   return (
     <div className="rounded-lg border shadow-sm p-2 lg:p-4">
@@ -23,9 +37,10 @@ function ProductGridCol({ products }: { products: ProductGridColProps[] }) {
             className="h-20 lg:h-20 py-2 px-2 lg:px-4 rounded-md border w-full flex justify-between items-center"
           >
             <div className="flex gap-2">
+              
               <div className="lg:w-15 lg:h-full flex justify-center items-center mt-0.75">
                 <Image
-                  src={product?.imageUrl?.[0] ?? '/avatar.png'}
+                  src={product?.imagesUrl?.[0] ?? '/avatar.png'}
                   height={40}
                   width={40}
                   alt=""
@@ -47,7 +62,7 @@ function ProductGridCol({ products }: { products: ProductGridColProps[] }) {
                     </span>
                   </p>
                   <div className="lg:flex hidden  ">
-                    {['S', 'M', 'L', 'XL'].map(size => (
+                    {product.size && product.size.split(",").map(size => (
                       <Button
                         key={size}
                         variant={'outline'}
@@ -67,8 +82,8 @@ function ProductGridCol({ products }: { products: ProductGridColProps[] }) {
             </div>
 
             <div>
-              <Button variant={'outline'} className="cursor-pointer ml-1">
-                <Trash2 className="text-red-600" />
+              <Button onClick={()=> handleDelete(product.id)} variant={'outline'} className="cursor-pointer ml-1">
+                {isLoading ? <CgSpinner /> : <Trash2 className="text-red-600" />}
               </Button>
             </div>
           </div>

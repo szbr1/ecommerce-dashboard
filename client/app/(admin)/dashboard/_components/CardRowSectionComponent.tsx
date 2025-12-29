@@ -1,7 +1,9 @@
+import { useGetOrderCountsQuery } from '@/(config)/api/countsApi'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import React from 'react'
 
 function CardRowSectionComponent() {
+    const {data} = useGetOrderCountsQuery();
   return (
     <div className='grid grid-cols-2 md:grid-cols-4 p-2 gap-3 px-4'>
 
@@ -11,7 +13,9 @@ function CardRowSectionComponent() {
          </CardHeader>
          <CardContent>
             <h5 className='text-xl md:text-2xl lg:text-4xl '>
-                30
+                {
+                    data && data.All
+                }
             </h5>
          </CardContent>
     </Card>
@@ -22,7 +26,9 @@ function CardRowSectionComponent() {
          </CardHeader>
          <CardContent>
             <h5 className='text-xl md:text-2xl lg:text-4xl '>
-                17
+                {
+                    data && data.Completed
+                }
             </h5>
          </CardContent>
     </Card>
@@ -33,7 +39,9 @@ function CardRowSectionComponent() {
          </CardHeader>
          <CardContent>
             <h5 className='text-xl md:text-2xl lg:text-4xl '>
-                6
+                {
+                    data && data.Failed
+                }
             </h5>
          </CardContent>
     </Card>
@@ -44,7 +52,9 @@ function CardRowSectionComponent() {
          </CardHeader>
          <CardContent>
             <h5 className='text-xl md:text-2xl lg:text-4xl '>
-                7
+                {
+                    data && data.Return
+                }
             </h5>
          </CardContent>
     </Card>

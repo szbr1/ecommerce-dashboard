@@ -5,33 +5,31 @@ import TableSectionComponent from './TableSectionComponent';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import { OrdersInterface } from '@/utils/types';
+import { DeliveryStatus, PaymentStatus} from '@/utils/types';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Order } from '@/utils/ApiTypes';
 
-function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) {
+function TableComponent({orders, rm}: {orders: Order[], rm?:boolean}) {
   const [searchText, setSearchText] = useState('');
-  const [filteredOrders, setFilteredOrders] = useState<OrdersInterface[]>(orders);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
 
-  type OrderStatus = 'paid' | 'unpaid' | 'return' | 'completed' | 'failed';
 
+   if(!orders) return <div>Nothing</div>
  
 
     const searchResults = filteredOrders.filter(order => {
       return (
-        order.id == searchText ||
-        order.customerName.toLowerCase().includes(searchText.toLowerCase())
+        order.id == Number(searchText) ||
+        order.user.name.toLowerCase().includes(searchText.toLowerCase())
       );
     });
 
-   const filterProducts = (status: OrderStatus) => {
-    return searchResults.filter(order => order.status === status);
+   const filterByDeliveryStatus = (status: DeliveryStatus) => {
+    return searchResults.filter(order => order.deliveryStatus === status );
   };
 
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      console.log(filterProducts("completed"))
-    }
+   const filterByPaymentStatus = (status: PaymentStatus) => {
+    return searchResults.filter(order => order.paymentStatus === status );
   };
 
   const handleDateChange = (value: string)=>{
@@ -47,7 +45,7 @@ function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) 
     const from = new Date(today);
     from.setDate(today.getDate() - fromDays);
 
-    const result = orders.filter(order => !(from > new Date(order.date)) )
+    const result = orders.filter(order => !(from > new Date(order.createdAt)) )
     setFilteredOrders(result)
     
   }
@@ -83,7 +81,6 @@ function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) 
             </Select>
             <Input
               value={searchText}
-              onKeyDown={handleKeyDown}
               onChange={e => setSearchText(e.target.value)}
               placeholder="Search"
               className="pr-7 w-full md:w-3/4"
@@ -97,25 +94,24 @@ function TableComponent({orders, rm}: {orders: OrdersInterface[], rm?:boolean}) 
           <TableSectionComponent orders={searchResults} />
         </TabsContent>
           
-
-        <TabsContent value="paid">
-          <TableSectionComponent orders={filterProducts('paid')} />
+          <TabsContent value="paid">
+          <TableSectionComponent orders={filterByPaymentStatus(PaymentStatus.PAID)} />
         </TabsContent>
 
         <TabsContent value="unpaid">
-          <TableSectionComponent orders={filterProducts('unpaid')} />
+          <TableSectionComponent orders={filterByPaymentStatus(PaymentStatus.UNPAID)} />
         </TabsContent>
 
         <TabsContent value="return">
-          <TableSectionComponent orders={filterProducts('return')} />
+          <TableSectionComponent orders={filterByPaymentStatus(PaymentStatus.RETURN)} />
         </TabsContent>
 
-        <TabsContent value="completed">
-          <TableSectionComponent orders={filterProducts('completed')} />
+        <TabsContent value="deleivered">
+          <TableSectionComponent orders={filterByDeliveryStatus(DeliveryStatus.DELIVERED)} />
         </TabsContent>
 
         <TabsContent value="failed">
-          <TableSectionComponent orders={filterProducts('failed')} />
+          <TableSectionComponent orders={filterByDeliveryStatus(DeliveryStatus.CANCELLED)} />
         </TabsContent>
       </Tabs>
     </div>

@@ -9,6 +9,7 @@ interface ShortHeaderProps {
 function ShortHeader({title, btnText}: ShortHeaderProps) {
      
   const [isCreateProductPopUpOpen, setIsCreateProductPopUpOpen] = useState(false);
+  
 
   return (
     <div className='w-full lg:h-15  h-14 px-2 md:px-4 flex justify-between items-center border-b'>

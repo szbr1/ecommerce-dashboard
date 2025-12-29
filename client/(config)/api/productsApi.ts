@@ -1,3 +1,4 @@
+import { Review } from '@/utils/types';
 import { api } from './api';
 
 const productApi = api.injectEndpoints({
@@ -24,8 +25,8 @@ const productApi = api.injectEndpoints({
     }),
 
     deleteProduct: builder.mutation({
-      query: data => ({
-        body: data,
+      query: ({productId}) => ({
+        body: {productId},
         method: 'DELETE',
         url: 'api/product/delete',
       }),
@@ -38,7 +39,10 @@ const productApi = api.injectEndpoints({
     }),
 
     getTotalCountProducts : builder.query({
-      query: ()=>"api/product/totalProductsCount"
+      query: ()=>"api/product/productCount"
+    }),
+    getAllReviews : builder.query<Review[], void>({
+      query: ()=> "api/product/getAllReviews"
     })
   }),
 
@@ -50,5 +54,6 @@ export const {
   useCreateProductMutation,
   useDeleteProductMutation,
   useGetProductsQuery,
-  useGetTotalCountProductsQuery
+  useGetTotalCountProductsQuery,
+  useGetAllReviewsQuery
 } = productApi;

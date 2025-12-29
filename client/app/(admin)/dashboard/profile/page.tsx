@@ -1,81 +1,115 @@
 'use client'
+import { useUpdateProfileMutation } from '@/(config)/api/usersApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { profile } from '@/constants/profile';
 import { GetDate } from '@/utils/StoreUtils';
-import { LogIn, PencilIcon } from 'lucide-react';
+import { LogIn, PencilIcon, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
-interface FormDataInteface {
-  name: string,
-  profilePicture: File | null
-}
 function Page() {
-  const imageRef = useRef<HTMLInputElement | null>(null)
-  const [previewImage, setPreviewImage] = useState("")
-  const [formData, setFormData] = useState<FormDataInteface>({
-    name: "",
-    profilePicture: null
-  })
+  const imageRef = useRef<HTMLInputElement | null>(null);
+  const [previewImage, setPreviewImage] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  
+  // Destructure isLoading for better UX
+  const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
-  console.log(formData)
+  // Cleanup effect to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (previewImage) URL.revokeObjectURL(previewImage);
+    };
+  }, [previewImage]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      // Revoke old preview if it exists
+      if (previewImage) URL.revokeObjectURL(previewImage);
+      
+      const newUrl = URL.createObjectURL(selectedFile);
+      setPreviewImage(newUrl);
+      setFile(selectedFile);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!file) {
+      toast.error("Please select an image first");
+      return;
+    }
+
+    const fData = new FormData();
+    // Key "avatar" must match upload.single("avatar") in Express
+    fData.append("avatar", file);
+
+    try {
+      await updateProfile(fData).unwrap();
+      toast.success("Profile picture updated!");
+      setFile(null); // Reset file state after success
+    } catch (err) {
+      toast.error("Failed to update profile");
+      console.error(err);
+    }
+  };
+
   return (
     <div className="flex justify-center w-full py-8">
-      {/* PROFILE CONTAINER  */}
-      <div className=" p-3 rounded-md md:border flex gap-3 flex-col lg:w-3/5 py-12 px-7">
-        {/* TITLES  */}
-        <div className="flex items-center gap-5">
-          <div className="size-20 rounded-full  relative">
-            <Image
-              src={previewImage.length>0 ? previewImage : profile.imageUrl || `/avatar.png`}
-              height={10}
-              width={10}
-              alt=""
-              className="size-full object-cover rounded-full"
+      <div className="p-3 rounded-md md:border flex gap-3 flex-col lg:w-3/5 py-12 px-7">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-5">
+            <div className="size-20 rounded-full relative">
+              <Image
+                src={previewImage || profile.imageUrl || `/avatar.png`}
+                height={80}
+                width={80}
+                alt="Profile"
+                className="size-full object-cover rounded-full border"
+              />
+              <button 
+                onClick={() => imageRef.current?.click()} 
+                className='absolute rounded-full p-1 bg-black text-white dark:bg-white dark:text-black flex justify-center items-center cursor-pointer size-6 bottom-0 right-0'
+              >
+                <PencilIcon className='size-3'/>
+              </button>
+              <input 
+                type="file" 
+                hidden 
+                accept='image/*' 
+                ref={imageRef} 
+                onChange={handleFileChange} 
+              />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold">{profile.name}</h1>
+              <p className="opacity-50 text-sm">{profile.email}</p>
+            </div>
+          </div>
 
-            />
-            <button onClick={()=> imageRef.current?.click()} className='absolute rounded-full p-1 dark:bg-white bg-black text-white dark:text-black flex justify-center items-center cursor-pointer size-6 bottom-0 right-0'>< PencilIcon className='size-3'/></button>
-            <input type="file" hidden accept='image/*' ref={imageRef} onChange={e => {
-              const file = e.target.files?.[0];
-              if(file){
-                const convertIntoUrl = URL.createObjectURL(file);
-                setPreviewImage(convertIntoUrl)
-                setFormData(prev => ({...prev, profilePicture: file}))
-              }
-            }} />
-          </div>
-          <div className="flex flex-col justify-center gap-2  md:gap-3">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl">{profile.name}</h1>
-            <p className="opacity-50 text-sm">{profile.email}</p>
-          </div>
+          {/* ADDED SAVE BUTTON */}
+          {file && (
+            <Button onClick={handleSave} disabled={isLoading} size="sm">
+              {isLoading ? <Loader2 className="animate-spin size-4" /> : "Save Changes"}
+            </Button>
+          )}
         </div>
 
-       {/* CREATED AT  */}
+        {/* ... Rest of your UI (Joined/Updated fields) ... */}
         <div className="flex flex-col gap-1 mt-6">
           <Label className="opacity-50 font-thin">You Joined</Label>
-          <Input value={GetDate(profile.createdAt)} />
+          <Input disabled value={GetDate(profile.createdAt)} />
         </div>
-
-        {/* UPDATED AT  */}
-        <div className="flex flex-col gap-1 ">
-          <Label className="opacity-50 font-thin">Last Updated</Label>
-          <Input value={GetDate(profile.updatedAt)} />
-        </div>
-
-        {/* LOGOUT  */}
-        <div className="flex justify-between items-center">
-          <h1 className="font-light text-[15px] opacity-70">
-            You can login again with the same email.
-          </h1>
-          {/* TODO  */}
-          <Button variant={'outline'} className="cursor-pointer">
-            <LogIn />
-            Logout
+        
+        <div className="flex justify-between items-center mt-6">
+          <p className="text-sm opacity-70">Logout from your account</p>
+          <Button variant='outline' className="gap-2">
+            <LogIn className="size-4" /> Logout
           </Button>
         </div>
-
       </div>  
     </div>
   );

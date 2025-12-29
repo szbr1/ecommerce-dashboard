@@ -69,11 +69,17 @@ enum StoreStatus {
   DELETED
 }
 
+model StoreCounts {
+  id          Int           @id @default(autoincrement())
+  totalProducts Int
+  totalOrders Int 
+  totalPositiveReviews Int
+  totalFollowers Int
+}
+
 model Store {
   id          Int           @id @default(autoincrement())
-  name        String
-  imageUrl    String?
-  description String?
+  profile     StoreProfile?
   status      StoreStatus   @default(ACTIVE)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt()
@@ -84,8 +90,21 @@ model Store {
   followers   Follower[]
   orders      OrderItem[]
 
-  @@index([name])
   @@index([id])
+}
+
+model StoreProfile {
+  storeId Int @unique
+  store Store @relation(fields: [storeId], references: [id])
+  name String
+  description String
+  avatarUrl String?
+  banner String?
+  brandshoot String?
+  brandshootProduct1 String?
+  brandshootProduct2 String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Follower {
@@ -124,7 +143,7 @@ model Product {
   description String?
   imagesUrl   String[]
   colors      String[]
-  size        String[]
+  size        String?
 
   price       Decimal
   stock       Int
@@ -137,7 +156,6 @@ model Product {
   storeId     Int
   store       Store    @relation(fields: [storeId], references: [id])
 
-  orders      OrderItem[]
   reviews     Review[]
   priceHistory ProductPriceHistory[]
 
@@ -155,11 +173,29 @@ model ProductPriceHistory {
   price      Decimal
 }
 
+enum DeliveryStatus {
+  DELIVERED
+  PENDING
+  SHIPPED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  UNPAID
+  RETURN
+  FAILED
+}
+
 model Order {
   id         Int      @id @default(autoincrement())
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
   trackingId String?
+  amount      Decimal
+  deliveryStatus DeliveryStatus @default(PENDING)
+  paymentStatus PaymentStatus?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt()
   orderItems OrderItem[]
@@ -222,9 +258,10 @@ model Review {
  comment String 
  createdAt      DateTime      @default(now())
  updatedAt      DateTime      @updatedAt
+ stars Int
  comments Comment[]
  user User @relation(fields: [userId], references: [id])
- product Product @relation(fields: [productId], references: [id])
+ product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
  @@unique([userId, productId])
 }
 
