@@ -1,45 +1,46 @@
+import cloudinary from '@/lib/cloudinary';
 import prisma from '@/lib/db';
+import { Prisma } from '@prisma/client';
 import type { Request, Response } from 'express';
+
+type CloudinaryFile = Express.Multer.File & { path: string };
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const {
-      title,
-      description,
-      price,
-      stock,
-      imageUrl,
-      sold,
-      categoryId,
-      storeId,
-    } = req.body;
+    const files = req.files as CloudinaryFile[];
+    if (!files || files.length === 0) {
+      return res.status(400).json({ message: 'No images provided' });
+    }
 
+    const { title, description, price, stock, size, category } = req.body;
+
+    //  Map Cloudinary URLs
+    // 'path' is provided by multer-storage-cloudinary.
+    // If using memoryStorage, this will be undefined
+    const imagesUrl = files.map(file => file.path);
+
+    console.log('Uploaded URLs:', imagesUrl);
+
+    // 4. Database Insertion
     const result = await prisma.product.create({
       data: {
         title,
         description,
-        price,
-        stock,
-        imageUrl,
-        sold,
-        store: {
-          connect: {
-            id: storeId,
-          },
-        },
+        price: Number(price),
+        stock: Number(stock),
+        imagesUrl,
+        size,
+        store: { connect: { id: 1 } },
         category: {
-          connect: {
-            id: categoryId,
-          },
+          create: { name: category },
         },
       },
     });
-    res.status(200).json({ message: 'successfully created product', result });
+
+    res.status(200).json({ message: 'Product created successfully', result });
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: 'product retreivig failed server is not responding' });
+    console.error('Creation Error:', error);
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
@@ -48,18 +49,96 @@ export const updateProduct = async (req: Request, res: Response) => {
     const { productId, title, description, price, stock, sub_title, imageUrl } =
       req.body;
 
-    const result = await prisma.product.update({
-      where: { id: productId },
-      data: {
-        title,
-        stock,
-        price,
-        description,
-        sub_title,
-        imageUrl,
-      },
+    const ts: Prisma.ProductUpdateInput = {};
+    let pushImages: string[];
+
+    if (sub_title) {
+      ts.sub_title = sub_title;
+    }
+
+    if (description) {
+      ts.description = description;
+    }
+
+    if (title) {
+      ts.title = title;
+    }
+
+    if (price) {
+      ts.price = price;
+    }
+
+    if (stock) {
+      ts.stock = stock;
+    }
+
+    // MULTIPLE IMAGES UPLOAD
+    if (Array.isArray(imageUrl)) {
+      const filterImages = imageUrl.filter(
+        img => typeof img === 'string' && img.trim().length > 0
+      );
+
+      const uploading = filterImages.map(async img => {
+        return await cloudinary.uploader.upload(img, { folder: 'products' });
+      });
+
+      const uploadingResult = await Promise.all(uploading);
+      pushImages = uploadingResult.map(i => i.secure_url);
+    }
+
+    if (typeof imageUrl === 'string' && imageUrl.trim()) {
+      const imageData = await cloudinary.uploader.upload(imageUrl, {
+        folder: 'products',
+      });
+
+      pushImages = [imageData.secure_url];
+    }
+
+    if (Array.isArray(imageUrl)) {
+      pushImages = imageUrl.filter(img => {
+        return typeof img === 'string' && img.trim().length > 2;
+      });
+    }
+
+    const transaction = await prisma.$transaction(async tx => {
+      const product = await tx.product.findUnique({
+        where: {
+          id: productId,
+        },
+        select: {
+          price: true,
+          id: true,
+        },
+      });
+
+      if (!product) {
+        throw new Error('product not found');
+      }
+
+      if (price !== undefined && product.price !== price) {
+        await tx.productPriceHistory.create({
+          data: {
+            productId: product.id,
+            price: product.price,
+          },
+        });
+      }
+
+      if (pushImages && pushImages.length > 0) {
+        ts.imagesUrl = { push: pushImages };
+      }
+
+      const result = await tx.product.update({
+        where: { id: product.id },
+        data: ts,
+      });
+
+      return result;
     });
-    res.status(200).json({ message: 'successfully updated a product', result });
+
+    res
+      .status(200)
+      .json({ message: 'successfully updated a product', result: transaction });
   } catch (error) {
     console.error(error);
     res
@@ -83,13 +162,108 @@ export const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
-export const totalProducts = async (req: Request, res: Response) => {
+export const getProducts = async (req: Request, res: Response) => {
   try {
-    const count = await prisma.product.count();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 30;
+    const storeId = Number(req.query.storeId);
 
-    return res.status(200).json({ message: 'total products', count });
+    const result = await prisma.product.findMany({
+      skip: (page - 1) * limit,
+      where: {
+        storeId,
+      },
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        category: true,
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ message: 'successfully fetched products', result });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'unable to fetch total products' });
+    res.status(500).json({ message: 'unsuccessfully while fetching products' });
+  }
+};
+
+export const totalProducts = async (req: Request, res: Response) => {
+  try {
+    const result = await prisma.product.count();
+    res
+      .status(200)
+      .json({ message: 'successfully fetched all products', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: 'all products fetch failed server is not responding' });
+  }
+};
+
+export const topSellingProduct = async (req: Request, res: Response) => {
+  try {
+    const { storeId } = req.body;
+    const result = await prisma.product.findMany({
+      where: { orders: { some: { storeId } } },
+      orderBy: {
+        sold: 'desc',
+      },
+      take: 8,
+      select: {
+        id: true,
+        imagesUrl: true,
+        sold: true,
+        title: true,
+        description: true,
+      },
+    });
+
+    res
+      .status(200)
+      .json({ message: 'successfully fetched all products', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: 'all products fetch failed server is not responding' });
+  }
+};
+
+export const getAllreviews = async (req: Request, res: Response) => {
+  try {
+    const result = await prisma.review.findMany({
+      where: {
+        product: {
+          storeId: 1, // Todo,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+            profile: {
+              select: {
+                imageUrl: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    res
+      .status(200)
+      .json({ message: 'successfully fetched all reviews', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: 'all reviews fetch failed server is not responding' });
   }
 };

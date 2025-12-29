@@ -6,7 +6,6 @@ import bcrypt from 'bcryptjs'
 
 export const singUp = async (req: Request, res: Response)=>{
     try {
-        console.log("hello")
         const {email , password, name} = req.body;
 
         if(!email || !password || !name){
@@ -45,12 +44,5 @@ export const signIn = async (req: Request, res: Response)=>{
     }
 }
 
-export const totalUsers = async (req: Request, res: Response)=>{
-    try {
-        const count = await prisma.user.count();
-        return res.status(200).json({message: "total users", count})
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({message: "unable to fetch total users"})
-    }
-}
+
+
