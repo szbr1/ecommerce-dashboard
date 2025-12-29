@@ -28,10 +28,10 @@ export const getStoreCounts = async (req: Request, res: Response) => {
 
       return tx.storeCounts.create({
         data: {
-          totalFollowers: followers,
-          totalOrders: orders,
-          totalPositiveReviews: reviews,
-          totalProducts: products,
+          totalFollowers: followers ? followers : 0,
+          totalOrders: orders ? orders : 0,
+          totalPositiveReviews: reviews ? reviews : 0,
+          totalProducts: products ? products : 0,
         },
       });
     });
@@ -46,7 +46,7 @@ export const getStoreCounts = async (req: Request, res: Response) => {
 export const getPaymentPageCounts = async (req: Request, res: Response) => {
   try {
     const result = await prisma.$transaction(async tx => {
-      const [TotalSales, ReturnSales, FailedSale] = await Promise.all([
+      const [TotalSales, ReturnSales, FailedSale, UnpaidSales] = await Promise.all([
         tx.order.aggregate({
           where: {
             orderItems: {
@@ -89,12 +89,28 @@ export const getPaymentPageCounts = async (req: Request, res: Response) => {
             amount: true,
           },
         }),
+
+      // Unpaid Sales
+      tx.order.aggregate({
+          where: {
+            orderItems: {
+              some: {
+                storeId: 1, // Todo
+              },
+            },
+            paymentStatus: 'UNPAID',
+          },
+          _sum: {
+            amount: true,
+          },
+        }),
       ]);
 
       return {
-        TotalSales: TotalSales._sum.amount !== null ? FailedSale._sum.amount : 0,
+        TotalSales: TotalSales._sum.amount !== null ? TotalSales._sum.amount : 0,
         FailedSales: FailedSale._sum.amount !== null ? FailedSale._sum.amount : 0,
         ReturnSales: ReturnSales._sum.amount !== null ? ReturnSales._sum.amount: 0,
+        UnpaidSales: UnpaidSales._sum.amount !== null ? UnpaidSales._sum.amount : 0
       };
     });
 

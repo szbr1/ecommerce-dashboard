@@ -178,6 +178,7 @@ enum DeliveryStatus {
   PENDING
   SHIPPED
   CANCELLED
+  COMPLETED
 }
 
 enum PaymentStatus {
@@ -275,5 +276,6 @@ model Comment {
   commenterId Int
   commenter   User      @relation(fields: [commenterId], references: [id])
 }
+
 
 

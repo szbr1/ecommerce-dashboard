@@ -256,10 +256,9 @@ export const getAllreviews = async (req: Request, res: Response) => {
         },
       },
     });
-
     res
       .status(200)
-      .json({ message: 'successfully fetched all reviews', result });
+      .json(result);
   } catch (error) {
     console.error(error);
     res

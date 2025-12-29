@@ -97,15 +97,19 @@ export const deleteStore = async (req: Request, res: Response) => {
 
 export const getStore = async (req: Request, res: Response) => {
   try {
-    const { storeId } = req.query;
 
     const result = await prisma.store.findFirst({
-      where: { id: Number(storeId) },
+      where: {
+         id: 1 // Todo
+         },
+         include: {
+          profile: true
+         }
     });
 
     return res
       .status(200)
-      .json({ message: 'successfully fetched the store', result });
+      .json(result);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'unsuccessfully while fetching store' });
@@ -387,3 +391,30 @@ export const updateProfile = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getFollowersByYear = async(req:Request, res: Response)=>{
+  try {
+      const thisYear = new Date().getFullYear();
+      const result = await Promise.all(Array.from({length: 5}).map(async(_,i)=>{
+        const year = thisYear - i
+        const start = new Date(year,0,1);
+        const end = new Date(year + 1,0,1)
+
+      const count =  await prisma.follower.count({
+          where: {
+            storeId: 1, //Todo
+            createdAt: {gte: start , lt: end}
+          }
+        })
+
+        return {
+          count,
+          year
+        }
+    }))
+    return res.status(200).json(result)
+  } catch (error) {
+    console.error(error)
+    return res.status(400).json({message: "unable to get followers server failed."})
+  }
+}

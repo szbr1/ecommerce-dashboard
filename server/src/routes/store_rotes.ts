@@ -1,5 +1,5 @@
 
-import { createStore, deleteStore, getProfle, getStore,  updateProfile,  updateStore, } from '@/controllers/store-controllers';
+import { createStore, deleteStore, getFollowersByYear, getProfle, getStore,  updateProfile,  updateStore, } from '@/controllers/store-controllers';
 import express from 'express';
 import type { Router } from 'express';
 
@@ -11,5 +11,5 @@ route.delete('/delete', deleteStore);
 route.get('/getStore', getStore)
 route.get('/getProfile', getProfle)
 route.patch('/updateProfile', updateProfile)
-
+route.get('/getFollowersByYear', getFollowersByYear)
 export default route
