@@ -41,10 +41,13 @@ function StoreProfile({
     <div className="flex gap-5">
       <div className="size-20 md:size-26 lg:size-32 shrink-0 relative rounded-full  border p-1">
         <img
-          src={
-            `${imagesPreviews.avatarUrl ? imagesPreviews.avatarUrl 
-            : store.profile.avatarUrl !== null ? store.profile.avatarUrl 
-            : '/avatar.png'}
+          src={`${
+            imagesPreviews.avatarUrl
+              ? imagesPreviews.avatarUrl
+              : store.profile.avatarUrl !== null
+                ? store.profile.avatarUrl
+                : '/avatar.png'
+          }
             `}
           alt=""
           height={50}

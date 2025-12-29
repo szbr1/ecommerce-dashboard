@@ -144,9 +144,7 @@ export const getOrders = async (req: Request, res: Response) => {
   }
 };
 
-
-
-export const getOrdersPageCounts = async(req: Request, res: Response) => {
+export const getOrdersPageCounts = async (req: Request, res: Response) => {
   try {
     const result = await prisma.$transaction(async tx => {
       const [All, Return, Failed, Completed] = await Promise.all([
@@ -154,18 +152,18 @@ export const getOrdersPageCounts = async(req: Request, res: Response) => {
           where: {
             orderItems: {
               some: {
-                storeId: 1 
-              }
+                storeId: 1,
+              },
             },
           },
         }),
 
         tx.order.count({
           where: {
-           orderItems: {
+            orderItems: {
               some: {
-                storeId: 1
-              }
+                storeId: 1,
+              },
             },
             paymentStatus: 'RETURN',
           },
@@ -175,8 +173,8 @@ export const getOrdersPageCounts = async(req: Request, res: Response) => {
           where: {
             orderItems: {
               some: {
-                storeId: 1
-              }
+                storeId: 1,
+              },
             },
             deliveryStatus: 'CANCELLED',
           },
@@ -186,8 +184,8 @@ export const getOrdersPageCounts = async(req: Request, res: Response) => {
           where: {
             orderItems: {
               some: {
-                storeId: 1
-              }
+                storeId: 1,
+              },
             },
             deliveryStatus: 'DELIVERED',
           },
@@ -222,7 +220,7 @@ export const getRecentOrders = async (req: Request, res: Response) => {
         },
       },
       orderBy: {
-        createdAt: "desc"
+        createdAt: 'desc',
       },
       take: 5,
       select: {
@@ -231,10 +229,10 @@ export const getRecentOrders = async (req: Request, res: Response) => {
         user: {
           select: {
             name: true,
-            email: true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
 
     return res.status(200).json(result);
@@ -261,7 +259,7 @@ export const getSalesByYear = async (req: Request, res: Response) => {
               gte: start,
               lt: end,
             },
-            paymentStatus: "PAID",
+            paymentStatus: 'PAID',
           },
           _sum: {
             amount: true,
@@ -278,19 +276,18 @@ export const getSalesByYear = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Failed to fetch yearly sales" });
+    return res.status(500).json({ message: 'Failed to fetch yearly sales' });
   }
 };
 
 export const getSalesByMonth = async (req: Request, res: Response) => {
   try {
-    const now = new Date()
+    const now = new Date();
 
     const result = await Promise.all(
       Array.from({ length: 12 }).map(async (_, i) => {
-
-        const start = new Date(now.getFullYear(),now.getMonth()-i , 1);
-        const end = new Date(now.getFullYear(), now.getMonth()-i+1,1);
+        const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
 
         const sales = await prisma.order.aggregate({
           where: {
@@ -298,7 +295,7 @@ export const getSalesByMonth = async (req: Request, res: Response) => {
               gte: start,
               lt: end,
             },
-            paymentStatus: "PAID",
+            paymentStatus: 'PAID',
           },
           _sum: {
             amount: true,
@@ -306,7 +303,7 @@ export const getSalesByMonth = async (req: Request, res: Response) => {
         });
 
         return {
-          month: start.toLocaleDateString("default", {month: "short"}),
+          month: start.toLocaleDateString('default', { month: 'short' }),
           totalAmount: sales._sum.amount ?? 0,
         };
       })
@@ -315,6 +312,6 @@ export const getSalesByMonth = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Failed to fetch yearly sales" });
+    return res.status(500).json({ message: 'Failed to fetch yearly sales' });
   }
 };

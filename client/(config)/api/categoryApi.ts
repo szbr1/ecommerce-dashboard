@@ -1,18 +1,13 @@
-import {api} from "./api";
-
+import { api } from './api';
 
 const productApi = api.injectEndpoints({
-     endpoints: (builder) => ({
-     
-        allCategoriesCount : builder.query({
-            query: () => 'api/category/totalCategories',
-            providesTags: ['Category']
-        }),
-       
+  endpoints: builder => ({
+    allCategoriesCount: builder.query({
+      query: () => 'api/category/totalCategories',
+      providesTags: ['Category'],
     }),
-    overrideExisting: false
-})
+  }),
+  overrideExisting: false,
+});
 
-
-export const {useAllCategoriesCountQuery} = productApi
-
+export const { useAllCategoriesCountQuery } = productApi;

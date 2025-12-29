@@ -12,7 +12,7 @@ import { FormDataInteface, PreviewImagesInteface } from '@/utils/types';
 import { toast } from 'sonner';
 
 function Page() {
-  const { data: store, isLoading, isError } = useGetStoreQuery({});
+  const { data: store, isLoading, isError } = useGetStoreQuery();
   const [formData, setFormData] = useState<FormDataInteface>({
     name: '',
     description: '',
@@ -49,20 +49,24 @@ function Page() {
   }
 
   if (isUpdating)
-    return <div className="flex justify-center items-center text-5xl h-screen w-full ">
-      <p>Updating...</p>
-    </div>;
+    return (
+      <div className="flex justify-center items-center text-5xl h-screen w-full ">
+        <p>Updating...</p>
+      </div>
+    );
 
- if (isUpdatingError)
-   return <div className="flex justify-center items-center text-5xl h-screen w-full ">
-      <p>Error While Updating</p>
-    </div>;
+  if (isUpdatingError)
+    return (
+      <div className="flex justify-center items-center text-5xl h-screen w-full ">
+        <p>Error While Updating</p>
+      </div>
+    );
 
   if (!store || store === undefined || store == null)
     return <div>Store Profile Not Founded</div>;
 
   const handleSaveChanges = async () => {
-   const filterEmptyAndNull = Object.fromEntries(
+    const filterEmptyAndNull = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => {
         if (value === null) return false;
         if (typeof value === 'string' && value.length === 0) return false;
@@ -70,18 +74,15 @@ function Page() {
       })
     );
 
-  
+    const fData = new FormData();
 
-    
- const fData = new FormData();
-
-  Object.entries(filterEmptyAndNull).forEach(([key, value]) => {
-    fData.append(key, value)
-});
+    Object.entries(filterEmptyAndNull).forEach(([key, value]) => {
+      fData.append(key, value);
+    });
     // TODO API
-    console.log(fData)
-  await updateStore(fData).unwrap()
-  toast.success("Profile Updated SuccessFully")
+    console.log(fData);
+    await updateStore(fData).unwrap();
+    toast.success('Profile Updated SuccessFully');
   };
 
   return (
@@ -196,11 +197,7 @@ function Page() {
           />
           <img
             src={
-              previewImages.brandshootProduct1
-                ? previewImages.brandshootProduct1
-                : store.profile.brandshootProduct1 !== null
-                  ? store.profile.brandshoot
-                  : '/mainproduct.png'
+              previewImages.poster || store.profile.banner || '/placeholder.png'
             }
             height={10}
             width={10}

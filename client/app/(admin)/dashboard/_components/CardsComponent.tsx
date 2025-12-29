@@ -1,4 +1,4 @@
- "use client"
+'use client';
 import {
   useGetOrderCountsQuery,
   useGetPaymentCountsQuery,
@@ -15,13 +15,12 @@ import { cn } from '@/lib/utils';
 interface Props {
   cols?: boolean;
 }
-function CardsComponent({cols }: Props) {
+function CardsComponent({ cols }: Props) {
   const { data: ordersCount } = useGetOrderCountsQuery();
   const { data: paymentsCount } = useGetPaymentCountsQuery();
   const { data: reviewsCount } = useGetAllReviewsQuery();
 
-
-  if(!ordersCount || !paymentsCount || !reviewsCount) return <div>wait</div>
+  if (!ordersCount || !paymentsCount || !reviewsCount) return <div>wait</div>;
   return (
     <div
       className={cn(
@@ -29,7 +28,6 @@ function CardsComponent({cols }: Props) {
         cols && 'lg:grid-cols-4'
       )}
     >
-      
       <Card>
         <CardHeader>
           <CardTitle className="">Total Orders</CardTitle>
@@ -49,7 +47,9 @@ function CardsComponent({cols }: Props) {
       <Card>
         <CardHeader>
           <CardTitle className="">Positve Reviews</CardTitle>
-          <CardDescription>{reviewsCount && reviewsCount.length}</CardDescription>
+          <CardDescription>
+            {reviewsCount && reviewsCount.length}
+          </CardDescription>
         </CardHeader>
       </Card>
 

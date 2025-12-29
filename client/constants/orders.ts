@@ -1,4 +1,4 @@
-import { OrdersInterface } from "@/utils/types";
+import { OrdersInterface } from '@/utils/types';
 
 export const orders: OrdersInterface[] = [
   // 🔹 Today / Recent

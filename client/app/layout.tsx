@@ -19,7 +19,7 @@ export default function RootLayout({
       <body>
         <StoreProvider>
           <ThemeProvider defaultTheme="system" enableSystem attribute="class">
-             <Toaster />
+            <Toaster />
             {children}
           </ThemeProvider>
         </StoreProvider>

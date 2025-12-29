@@ -119,7 +119,7 @@ export interface StoreProfile {
     brandshootProduct1: string | null;
     brandshootProduct2: string | null;
   };
-  status: string
+  status: string;
   createdAt: string | Date;
   updatedAt: string | Date;
 }

@@ -26,7 +26,7 @@ export const deleteCategory = async (req: Request, res: Response) => {
 
     const result = await prisma.category.delete({
       where: {
-        id: categoryId
+        id: categoryId,
       },
     });
 
@@ -39,12 +39,18 @@ export const deleteCategory = async (req: Request, res: Response) => {
   }
 };
 
-export const totalCategories = async (req: Request, res: Response)=>{
-    try {
-        const result = await prisma.category.count()        
-        res.status(200).json({message: "successfuyll fetched all categories", result})
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({message: "all categories fetch failed server is not responding"})
-    }
-}
+export const totalCategories = async (req: Request, res: Response) => {
+  try {
+    const result = await prisma.category.count();
+    res
+      .status(200)
+      .json({ message: 'successfuyll fetched all categories', result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        message: 'all categories fetch failed server is not responding',
+      });
+  }
+};

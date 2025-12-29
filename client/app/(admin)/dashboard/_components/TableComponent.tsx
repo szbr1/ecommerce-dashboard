@@ -5,50 +5,54 @@ import TableSectionComponent from './TableSectionComponent';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import { DeliveryStatus, PaymentStatus} from '@/utils/types';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DeliveryStatus, PaymentStatus } from '@/utils/types';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Order } from '@/utils/ApiTypes';
 
-function TableComponent({orders, rm}: {orders: Order[], rm?:boolean}) {
+function TableComponent({ orders, rm }: { orders: Order[]; rm?: boolean }) {
   const [searchText, setSearchText] = useState('');
   const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
 
+  if (!orders) return <div>Nothing</div>;
 
-   if(!orders) return <div>Nothing</div>
- 
+  const searchResults = filteredOrders.filter(order => {
+    return (
+      order.id == Number(searchText) ||
+      order.user.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+  });
 
-    const searchResults = filteredOrders.filter(order => {
-      return (
-        order.id == Number(searchText) ||
-        order.user.name.toLowerCase().includes(searchText.toLowerCase())
-      );
-    });
-
-   const filterByDeliveryStatus = (status: DeliveryStatus) => {
-    return searchResults.filter(order => order.deliveryStatus === status );
+  const filterByDeliveryStatus = (status: DeliveryStatus) => {
+    return searchResults.filter(order => order.deliveryStatus === status);
   };
 
-   const filterByPaymentStatus = (status: PaymentStatus) => {
-    return searchResults.filter(order => order.paymentStatus === status );
+  const filterByPaymentStatus = (status: PaymentStatus) => {
+    return searchResults.filter(order => order.paymentStatus === status);
   };
 
-  const handleDateChange = (value: string)=>{
+  const handleDateChange = (value: string) => {
     let fromDays = 0;
-    console.log("run 1")
+    console.log('run 1');
 
-    if(value === "1")  fromDays = 30;
-    if(value === "3") fromDays = 90;
-    if(value === "6") fromDays = 184;
-    if(value === "12")  fromDays = 365
-    
+    if (value === '1') fromDays = 30;
+    if (value === '3') fromDays = 90;
+    if (value === '6') fromDays = 184;
+    if (value === '12') fromDays = 365;
+
     const today = new Date();
     const from = new Date(today);
     from.setDate(today.getDate() - fromDays);
 
-    const result = orders.filter(order => !(from > new Date(order.createdAt)) )
-    setFilteredOrders(result)
-    
-  }
+    const result = orders.filter(order => !(from > new Date(order.createdAt)));
+    setFilteredOrders(result);
+  };
 
   return (
     <div className="p-4">
@@ -57,25 +61,26 @@ function TableComponent({orders, rm}: {orders: Order[], rm?:boolean}) {
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="paid">Paid</TabsTrigger>
-            {!rm && 
-            <TabsTrigger value="unpaid">Unpaid</TabsTrigger>
-            }
+            {!rm && <TabsTrigger value="unpaid">Unpaid</TabsTrigger>}
             <TabsTrigger value="return">Return</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
             <TabsTrigger value="failed">Failed</TabsTrigger>
           </TabsList>
           <div className="relative w-full gap-3 flex justify-end  lg:w-4/12">
-            <Select defaultValue='default' onValueChange={item => handleDateChange(item)}>
-              <SelectTrigger className='w-25 md:w-35'>
-                 <SelectValue />
+            <Select
+              defaultValue="default"
+              onValueChange={item => handleDateChange(item)}
+            >
+              <SelectTrigger className="w-25 md:w-35">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value='1'>1 Month</SelectItem>
-                  <SelectItem value='3'>3 Month</SelectItem>
-                  <SelectItem value='6'>6 Month</SelectItem>
-                  <SelectItem value='12'>12 Month</SelectItem>
-                  <SelectItem value='default'>Default</SelectItem>
+                  <SelectItem value="1">1 Month</SelectItem>
+                  <SelectItem value="3">3 Month</SelectItem>
+                  <SelectItem value="6">6 Month</SelectItem>
+                  <SelectItem value="12">12 Month</SelectItem>
+                  <SelectItem value="default">Default</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -88,30 +93,39 @@ function TableComponent({orders, rm}: {orders: Order[], rm?:boolean}) {
             <Search className="size-5 absolute top-1/2  right-2 text-gray-300 dark:text-zinc-700 -translate-y-1/2 " />
           </div>
         </div>
-        
 
         <TabsContent value="all">
           <TableSectionComponent orders={searchResults} />
         </TabsContent>
-          
-          <TabsContent value="paid">
-          <TableSectionComponent orders={filterByPaymentStatus(PaymentStatus.PAID)} />
+
+        <TabsContent value="paid">
+          <TableSectionComponent
+            orders={filterByPaymentStatus(PaymentStatus.PAID)}
+          />
         </TabsContent>
 
         <TabsContent value="unpaid">
-          <TableSectionComponent orders={filterByPaymentStatus(PaymentStatus.UNPAID)} />
+          <TableSectionComponent
+            orders={filterByPaymentStatus(PaymentStatus.UNPAID)}
+          />
         </TabsContent>
 
         <TabsContent value="return">
-          <TableSectionComponent orders={filterByPaymentStatus(PaymentStatus.RETURN)} />
+          <TableSectionComponent
+            orders={filterByPaymentStatus(PaymentStatus.RETURN)}
+          />
         </TabsContent>
 
         <TabsContent value="deleivered">
-          <TableSectionComponent orders={filterByDeliveryStatus(DeliveryStatus.DELIVERED)} />
+          <TableSectionComponent
+            orders={filterByDeliveryStatus(DeliveryStatus.DELIVERED)}
+          />
         </TabsContent>
 
         <TabsContent value="failed">
-          <TableSectionComponent orders={filterByDeliveryStatus(DeliveryStatus.CANCELLED)} />
+          <TableSectionComponent
+            orders={filterByDeliveryStatus(DeliveryStatus.CANCELLED)}
+          />
         </TabsContent>
       </Tabs>
     </div>

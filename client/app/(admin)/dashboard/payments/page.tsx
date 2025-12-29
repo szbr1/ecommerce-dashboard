@@ -13,13 +13,12 @@ import { useGetPaymentCountsQuery } from '@/(config)/api/countsApi';
 function Page() {
   const { data: orders, isLoading, isError } = useGetOrdersQuery();
   const { data } = useGetPaymentCountsQuery();
-  
-  if(isLoading) return <div>Loading...</div>
-  if(isError) return <div>Error</div>
-  
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
 
   return (
-      <div className="gap-3 p-3 flex flex-col">
+    <div className="gap-3 p-3 flex flex-col">
       <div className="flex gap-3">
         <div className="grid w-full grid-cols-2  gap-3 ">
           <Card>
@@ -49,13 +48,7 @@ function Page() {
         </div>
       </div>
 
-     
-     {
-        orders && <TableComponent orders={orders} rm={true} />
-     }
-
-     
-      
+      {orders && <TableComponent orders={orders} rm={true} />}
     </div>
   );
 }

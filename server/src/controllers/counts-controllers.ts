@@ -46,71 +46,76 @@ export const getStoreCounts = async (req: Request, res: Response) => {
 export const getPaymentPageCounts = async (req: Request, res: Response) => {
   try {
     const result = await prisma.$transaction(async tx => {
-      const [TotalSales, ReturnSales, FailedSale, UnpaidSales] = await Promise.all([
-        tx.order.aggregate({
-          where: {
-            orderItems: {
-              some: {
-                storeId: 1, // Todo
+      const [TotalSales, ReturnSales, FailedSale, UnpaidSales] =
+        await Promise.all([
+          tx.order.aggregate({
+            where: {
+              orderItems: {
+                some: {
+                  storeId: 1, // Todo
+                },
               },
             },
-          },
-          _sum: {
-            amount: true,
-          },
-        }),
+            _sum: {
+              amount: true,
+            },
+          }),
 
-        // Return Sales
-        tx.order.aggregate({
-          where: {
-            orderItems: {
-              some: {
-                storeId: 1, // Todo
+          // Return Sales
+          tx.order.aggregate({
+            where: {
+              orderItems: {
+                some: {
+                  storeId: 1, // Todo
+                },
               },
+              paymentStatus: 'RETURN',
             },
-            paymentStatus: 'RETURN',
-          },
-          _sum: {
-            amount: true,
-          },
-        }),
+            _sum: {
+              amount: true,
+            },
+          }),
 
-        // Failed Sales
-        tx.order.aggregate({
-          where: {
-            orderItems: {
-              some: {
-                storeId: 1, // Todo
+          // Failed Sales
+          tx.order.aggregate({
+            where: {
+              orderItems: {
+                some: {
+                  storeId: 1, // Todo
+                },
               },
+              paymentStatus: 'FAILED',
             },
-            paymentStatus: 'FAILED',
-          },
-          _sum: {
-            amount: true,
-          },
-        }),
+            _sum: {
+              amount: true,
+            },
+          }),
 
-      // Unpaid Sales
-      tx.order.aggregate({
-          where: {
-            orderItems: {
-              some: {
-                storeId: 1, // Todo
+          // Unpaid Sales
+          tx.order.aggregate({
+            where: {
+              orderItems: {
+                some: {
+                  storeId: 1, // Todo
+                },
               },
+              paymentStatus: 'UNPAID',
             },
-            paymentStatus: 'UNPAID',
-          },
-          _sum: {
-            amount: true,
-          },
-        }),
-      ]);
+            _sum: {
+              amount: true,
+            },
+          }),
+        ]);
 
       return {
-        TotalSales: TotalSales._sum.amount !== null ? TotalSales._sum.amount : 0,
-        FailedSales: FailedSale._sum.amount !== null ? FailedSale._sum.amount : 0,
-        ReturnSales: ReturnSales._sum.amount !== null ? ReturnSales._sum.amount: 0,
-        UnpaidSales: UnpaidSales._sum.amount !== null ? UnpaidSales._sum.amount : 0
+        TotalSales:
+          TotalSales._sum.amount !== null ? TotalSales._sum.amount : 0,
+        FailedSales:
+          FailedSale._sum.amount !== null ? FailedSale._sum.amount : 0,
+        ReturnSales:
+          ReturnSales._sum.amount !== null ? ReturnSales._sum.amount : 0,
+        UnpaidSales:
+          UnpaidSales._sum.amount !== null ? UnpaidSales._sum.amount : 0,
       };
     });
 

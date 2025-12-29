@@ -42,13 +42,13 @@ export const createStore = async (req: Request, res: Response) => {
 export const updateStore = async (req: Request, res: Response) => {
   try {
     const { name, description } = req.body;
-    
+
     // Files are in req.files when using upload.fields()
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    
+
     console.log('Body:', req.body);
     console.log('Files:', files);
-    
+
     // Build the update data object dynamically
     const updateData: {
       name?: string;
@@ -59,11 +59,11 @@ export const updateStore = async (req: Request, res: Response) => {
       brandshootProduct1?: string;
       brandshootProduct2?: string;
     } = {};
-    
+
     // Add text fields if they exist
     if (name) updateData.name = name;
     if (description) updateData.description = description;
-    
+
     // Add file URLs if they were uploaded
     if (files?.poster?.[0]) {
       updateData.banner = files.poster[0].path; // or .filename depending on your multer config
@@ -80,12 +80,12 @@ export const updateStore = async (req: Request, res: Response) => {
     if (files?.brandshootProduct2?.[0]) {
       updateData.brandshootProduct2 = files.brandshootProduct2[0].path;
     }
-    
+
     // Only update if there's data to update
     if (Object.keys(updateData).length === 0) {
       return res.status(400).json({ message: 'No data to update' });
     }
-    
+
     const result = await prisma.store.update({
       where: { id: 1 }, // TODO: Get from authenticated user
       data: {
@@ -94,19 +94,18 @@ export const updateStore = async (req: Request, res: Response) => {
         },
       },
     });
-    
-    console.log(result, "---------------");
-    
-    return res.status(200).json({ 
-      message: 'Successfully updated store', 
-      result 
+
+    console.log(result, '---------------');
+
+    return res.status(200).json({
+      message: 'Successfully updated store',
+      result,
     });
-    
   } catch (error) {
     console.error('Update store error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Error while updating store',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 };
@@ -130,19 +129,16 @@ export const deleteStore = async (req: Request, res: Response) => {
 
 export const getStore = async (req: Request, res: Response) => {
   try {
-
     const result = await prisma.store.findFirst({
       where: {
-         id: 1 // Todo
-         },
-         include: {
-          profile: true
-         }
+        id: 1, // Todo
+      },
+      include: {
+        profile: true,
+      },
     });
 
-    return res
-      .status(200)
-      .json(result);
+    return res.status(200).json(result);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'unsuccessfully while fetching store' });
@@ -358,8 +354,6 @@ export const lastyearSales = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export const getProfle = async (req: Request, res: Response) => {
   try {
     const result = prisma.store.findUnique({
@@ -425,29 +419,33 @@ export const updateProfile = async (req: Request, res: Response) => {
   }
 };
 
-export const getFollowersByYear = async(req:Request, res: Response)=>{
+export const getFollowersByYear = async (req: Request, res: Response) => {
   try {
-      const thisYear = new Date().getFullYear();
-      const result = await Promise.all(Array.from({length: 5}).map(async(_,i)=>{
-        const year = thisYear - i
-        const start = new Date(year,0,1);
-        const end = new Date(year + 1,0,1)
+    const thisYear = new Date().getFullYear();
+    const result = await Promise.all(
+      Array.from({ length: 5 }).map(async (_, i) => {
+        const year = thisYear - i;
+        const start = new Date(year, 0, 1);
+        const end = new Date(year + 1, 0, 1);
 
-      const count =  await prisma.follower.count({
+        const count = await prisma.follower.count({
           where: {
             storeId: 1, //Todo
-            createdAt: {gte: start , lt: end}
-          }
-        })
+            createdAt: { gte: start, lt: end },
+          },
+        });
 
         return {
           count,
-          year
-        }
-    }))
-    return res.status(200).json(result)
+          year,
+        };
+      })
+    );
+    return res.status(200).json(result);
   } catch (error) {
-    console.error(error)
-    return res.status(400).json({message: "unable to get followers server failed."})
+    console.error(error);
+    return res
+      .status(400)
+      .json({ message: 'unable to get followers server failed.' });
   }
-}
+};

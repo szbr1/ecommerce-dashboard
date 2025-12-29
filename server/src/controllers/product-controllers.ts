@@ -256,9 +256,7 @@ export const getAllreviews = async (req: Request, res: Response) => {
         },
       },
     });
-    res
-      .status(200)
-      .json(result);
+    res.status(200).json(result);
   } catch (error) {
     console.error(error);
     res

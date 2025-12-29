@@ -10,7 +10,7 @@ interface CloudinaryParams {
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'products',                   
+    folder: 'products',
     allowed_formats: ['jpg', 'png', 'jpeg'],
   } as CloudinaryParams,
 });

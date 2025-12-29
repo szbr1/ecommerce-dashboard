@@ -1,15 +1,12 @@
-import {api} from "./api";
-
+import { api } from './api';
 
 const paymentApi = api.injectEndpoints({
-     endpoints: (builder) => ({
-        getTotalSalesCount : builder.query({
-            query: ()=> "api/payment/getTotalSalesCount"
-        })
+  endpoints: builder => ({
+    getTotalSalesCount: builder.query({
+      query: () => 'api/payment/getTotalSalesCount',
     }),
-    overrideExisting: false
-})
+  }),
+  overrideExisting: false,
+});
 
-
-export const {useGetTotalSalesCountQuery} = paymentApi
-
+export const { useGetTotalSalesCountQuery } = paymentApi;

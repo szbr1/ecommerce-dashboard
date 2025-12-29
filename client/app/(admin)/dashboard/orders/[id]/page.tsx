@@ -19,7 +19,7 @@ function page() {
           <h2>Customer Name:</h2>x
           <h2 className="min-w-[100px]">{order.user.name}</h2>
         </div>
-        <hr className='my-2' />
+        <hr className="my-2" />
 
         <div className="flex justify-between items-center">
           <h2>Province:</h2>
@@ -39,7 +39,7 @@ function page() {
             <h2 className="min-w-[100px]">{order.address.street1}</h2>
           </div>
         )}
-        <hr  className='my-2'/>
+        <hr className="my-2" />
         {/* TODO  */}
         <div className="flex justify-between items-center">
           <h2>Contact One:</h2>
@@ -68,46 +68,47 @@ function page() {
                 <p className="text-sm opacity-50">{order.product.subTitle}</p>
                 <h3>
                   Price:{' '}
-                  <span className="font-semibold text-amber-700">${order.product.price}</span>
+                  <span className="font-semibold text-amber-700">
+                    ${order.product.price}
+                  </span>
                 </h3>
               </div>
             </div>
-            <div className='flex flex-col gap-3'>
-                <div>Quantity: {order.quantity}</div>
-            {
-                order.product.size && order.product.size.length > 0 && <h3>Size: {order.product.size?.map(s => (s))}</h3>
-            }
+            <div className="flex flex-col gap-3">
+              <div>Quantity: {order.quantity}</div>
+              {order.product.size && order.product.size.length > 0 && (
+                <h3>Size: {order.product.size?.map(s => s)}</h3>
+              )}
             </div>
-            
           </div>
         ))}
 
         <hr />
 
-        <div className='w-full flex justify-end'>
-            <div className=' min-w-60 md:text-lg md:min-w-80'>
-                <div className='flex justify-between items-center'>
-                    <h4>Quantity:</h4>
-                    <h3 className='font-semibold'>3</h3>
-                </div>
-                <div className='flex justify-between items-center'>
-                    <h4>Products Total:</h4>
-                    <h3 className='font-semibold text-amber-700'>$800</h3>
-                </div>
-                <div className='flex justify-between items-center'>
-                    <h4>Coupon:</h4>
-                    <h3 className='font-semibold'></h3>
-                </div>
-                <div className='flex justify-between items-center'>
-                    <h4>Delivery:</h4>
-                    <h3 className='font-semibold text-amber-700'>$10</h3>
-                </div>
-                <hr className='py-2 mt-2' />
-                <div className='flex bg-amber-800 px-2 justify-between items-center'>
-                    <h4>Total:</h4>
-                    <h3 className='font-semibold'>$810</h3>
-                </div>
+        <div className="w-full flex justify-end">
+          <div className=" min-w-60 md:text-lg md:min-w-80">
+            <div className="flex justify-between items-center">
+              <h4>Quantity:</h4>
+              <h3 className="font-semibold">3</h3>
             </div>
+            <div className="flex justify-between items-center">
+              <h4>Products Total:</h4>
+              <h3 className="font-semibold text-amber-700">$800</h3>
+            </div>
+            <div className="flex justify-between items-center">
+              <h4>Coupon:</h4>
+              <h3 className="font-semibold"></h3>
+            </div>
+            <div className="flex justify-between items-center">
+              <h4>Delivery:</h4>
+              <h3 className="font-semibold text-amber-700">$10</h3>
+            </div>
+            <hr className="py-2 mt-2" />
+            <div className="flex bg-amber-800 px-2 justify-between items-center">
+              <h4>Total:</h4>
+              <h3 className="font-semibold">$810</h3>
+            </div>
+          </div>
         </div>
       </div>
     </div>

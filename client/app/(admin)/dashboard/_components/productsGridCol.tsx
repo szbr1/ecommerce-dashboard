@@ -15,18 +15,14 @@ interface ProductGridColProps {
   updatedAt: string;
 }
 
-
 function ProductGridCol({ products }: { products: ProductGridColProps[] }) {
-  
-  const [deleteProduct , {isLoading} ] = useDeleteProductMutation();
+  const [deleteProduct, { isLoading }] = useDeleteProductMutation();
 
-const handleDelete = async(productId: number)=>{
-  
- const res = await deleteProduct({productId})
- console.log("success")
- console.log(res.data);
-}
-
+  const handleDelete = async (productId: number) => {
+    const res = await deleteProduct({ productId });
+    console.log('success');
+    console.log(res.data);
+  };
 
   return (
     <div className="rounded-lg border shadow-sm p-2 lg:p-4">
@@ -37,7 +33,6 @@ const handleDelete = async(productId: number)=>{
             className="h-20 lg:h-20 py-2 px-2 lg:px-4 rounded-md border w-full flex justify-between items-center"
           >
             <div className="flex gap-2">
-              
               <div className="lg:w-15 lg:h-full flex justify-center items-center mt-0.75">
                 <Image
                   src={product?.imagesUrl?.[0] ?? '/avatar.png'}
@@ -62,15 +57,16 @@ const handleDelete = async(productId: number)=>{
                     </span>
                   </p>
                   <div className="lg:flex hidden  ">
-                    {product.size && product.size.split(",").map(size => (
-                      <Button
-                        key={size}
-                        variant={'outline'}
-                        className=" text-xs ml-1"
-                      >
-                        {size}
-                      </Button>
-                    ))}
+                    {product.size &&
+                      product.size.split(',').map(size => (
+                        <Button
+                          key={size}
+                          variant={'outline'}
+                          className=" text-xs ml-1"
+                        >
+                          {size}
+                        </Button>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -82,8 +78,16 @@ const handleDelete = async(productId: number)=>{
             </div>
 
             <div>
-              <Button onClick={()=> handleDelete(product.id)} variant={'outline'} className="cursor-pointer ml-1">
-                {isLoading ? <CgSpinner /> : <Trash2 className="text-red-600" />}
+              <Button
+                onClick={() => handleDelete(product.id)}
+                variant={'outline'}
+                className="cursor-pointer ml-1"
+              >
+                {isLoading ? (
+                  <CgSpinner />
+                ) : (
+                  <Trash2 className="text-red-600" />
+                )}
               </Button>
             </div>
           </div>

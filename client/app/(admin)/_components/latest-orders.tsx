@@ -8,28 +8,28 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-
 function LastOrders() {
-  const {data: orders} = useGetRecnetOrdersQuery()
+  const { data: orders } = useGetRecnetOrdersQuery();
   return (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Order Id</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Amount</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {orders && orders.map(order => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Order Id</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Amount</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {orders &&
+          orders.map(order => (
             <TableRow key={order.id}>
               <TableCell>#{order.id}</TableCell>
               <TableCell>{order.user.name}</TableCell>
               <TableCell>{order.amount}</TableCell>
             </TableRow>
           ))}
-        </TableBody>
-      </Table>
+      </TableBody>
+    </Table>
   );
 }
 

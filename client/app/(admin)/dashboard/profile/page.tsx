@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useUpdateProfileMutation } from '@/(config)/api/usersApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,9 +12,9 @@ import { toast } from 'sonner';
 
 function Page() {
   const imageRef = useRef<HTMLInputElement | null>(null);
-  const [previewImage, setPreviewImage] = useState("");
+  const [previewImage, setPreviewImage] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  
+
   // Destructure isLoading for better UX
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
@@ -30,7 +30,7 @@ function Page() {
     if (selectedFile) {
       // Revoke old preview if it exists
       if (previewImage) URL.revokeObjectURL(previewImage);
-      
+
       const newUrl = URL.createObjectURL(selectedFile);
       setPreviewImage(newUrl);
       setFile(selectedFile);
@@ -39,20 +39,20 @@ function Page() {
 
   const handleSave = async () => {
     if (!file) {
-      toast.error("Please select an image first");
+      toast.error('Please select an image first');
       return;
     }
 
     const fData = new FormData();
     // Key "avatar" must match upload.single("avatar") in Express
-    fData.append("avatar", file);
+    fData.append('avatar', file);
 
     try {
       await updateProfile(fData).unwrap();
-      toast.success("Profile picture updated!");
+      toast.success('Profile picture updated!');
       setFile(null); // Reset file state after success
     } catch (err) {
-      toast.error("Failed to update profile");
+      toast.error('Failed to update profile');
       console.error(err);
     }
   };
@@ -70,18 +70,18 @@ function Page() {
                 alt="Profile"
                 className="size-full object-cover rounded-full border"
               />
-              <button 
-                onClick={() => imageRef.current?.click()} 
-                className='absolute rounded-full p-1 bg-black text-white dark:bg-white dark:text-black flex justify-center items-center cursor-pointer size-6 bottom-0 right-0'
+              <button
+                onClick={() => imageRef.current?.click()}
+                className="absolute rounded-full p-1 bg-black text-white dark:bg-white dark:text-black flex justify-center items-center cursor-pointer size-6 bottom-0 right-0"
               >
-                <PencilIcon className='size-3'/>
+                <PencilIcon className="size-3" />
               </button>
-              <input 
-                type="file" 
-                hidden 
-                accept='image/*' 
-                ref={imageRef} 
-                onChange={handleFileChange} 
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                ref={imageRef}
+                onChange={handleFileChange}
               />
             </div>
             <div>
@@ -93,7 +93,11 @@ function Page() {
           {/* ADDED SAVE BUTTON */}
           {file && (
             <Button onClick={handleSave} disabled={isLoading} size="sm">
-              {isLoading ? <Loader2 className="animate-spin size-4" /> : "Save Changes"}
+              {isLoading ? (
+                <Loader2 className="animate-spin size-4" />
+              ) : (
+                'Save Changes'
+              )}
             </Button>
           )}
         </div>
@@ -103,14 +107,14 @@ function Page() {
           <Label className="opacity-50 font-thin">You Joined</Label>
           <Input disabled value={GetDate(profile.createdAt)} />
         </div>
-        
+
         <div className="flex justify-between items-center mt-6">
           <p className="text-sm opacity-70">Logout from your account</p>
-          <Button variant='outline' className="gap-2">
+          <Button variant="outline" className="gap-2">
             <LogIn className="size-4" /> Logout
           </Button>
         </div>
-      </div>  
+      </div>
     </div>
   );
 }

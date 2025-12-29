@@ -17,20 +17,19 @@ export interface PreviewImagesInteface {
 }
 
 export enum DeliveryStatus {
-  PENDING = "PENDING",
-  SHIPPED = "SHIPPED",
-  DELIVERED = "DELIVERED",
-  CANCELLED = "CANCELLED",
+  PENDING = 'PENDING',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
 }
 
 export enum PaymentStatus {
-  PENDING = "PENDING",
-  PAID = "PAID",
-  UNPAID = "UNPAID",
-  RETURN = "RETURN",
-  FAILED = "FAILED",
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  UNPAID = 'UNPAID',
+  RETURN = 'RETURN',
+  FAILED = 'FAILED',
 }
-
 
 export interface OrdersInterface {
   id: string;
@@ -45,7 +44,6 @@ export interface OrdersInterface {
   trackingId?: string;
 }
 
-
 export interface Review {
   id: number;
   comment: string;
@@ -57,7 +55,6 @@ export interface Review {
     email: string;
     profile: {
       imageUrl: string;
-    }
+    };
   };
 }
-

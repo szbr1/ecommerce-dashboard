@@ -25,8 +25,8 @@ const productApi = api.injectEndpoints({
     }),
 
     deleteProduct: builder.mutation({
-      query: ({productId}) => ({
-        body: {productId},
+      query: ({ productId }) => ({
+        body: { productId },
         method: 'DELETE',
         url: 'api/product/delete',
       }),
@@ -38,12 +38,12 @@ const productApi = api.injectEndpoints({
       providesTags: ['Products'],
     }),
 
-    getTotalCountProducts : builder.query({
-      query: ()=>"api/product/productCount"
+    getTotalCountProducts: builder.query({
+      query: () => 'api/product/productCount',
     }),
-    getAllReviews : builder.query<Review[], void>({
-      query: ()=> "api/product/getAllReviews"
-    })
+    getAllReviews: builder.query<Review[], void>({
+      query: () => 'api/product/getAllReviews',
+    }),
   }),
 
   overrideExisting: false,
@@ -55,5 +55,5 @@ export const {
   useDeleteProductMutation,
   useGetProductsQuery,
   useGetTotalCountProductsQuery,
-  useGetAllReviewsQuery
+  useGetAllReviewsQuery,
 } = productApi;
